@@ -11,6 +11,7 @@ const LoadingPage = () => {
 				alt='Loading...'
 				style={{ width: '150px', height: 'auto' }}
 				priority={true}
+				unoptimized
 			/>
 		</div>
 	);
