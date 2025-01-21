@@ -10,6 +10,7 @@ const ProductList = ({
 	limit?: number;
 }) => {
 	const limitedData = limit ? data.slice(0, limit) : data;
+	console.log(limitedData);
 	return (
 		<div className='my-10'>
 			<h2 className='h2-bold mb-4'>{title}</h2>
