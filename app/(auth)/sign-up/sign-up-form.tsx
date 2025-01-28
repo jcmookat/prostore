@@ -1,14 +1,18 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { signUpDefaultValues } from '@/lib/constants';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { startTransition, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { signUpUser } from '@/lib/actions/user.actions';
 import { useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import SignUpFormField from './sign-up-form-field';
+import { signUpFormSchema } from '@/lib/validators';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
 
 const SignUpForm = () => {
 	const [data, action] = useActionState(signUpUser, {
@@ -19,6 +23,11 @@ const SignUpForm = () => {
 	const searchParams = useSearchParams();
 	const callbackUrl = searchParams.get('callbackUrl') || '/';
 
+	const form = useForm<z.infer<typeof signUpFormSchema>>({
+		resolver: zodResolver(signUpFormSchema),
+		defaultValues: signUpDefaultValues,
+	});
+
 	const SignUpButton = () => {
 		const { pending } = useFormStatus();
 
@@ -28,68 +37,68 @@ const SignUpForm = () => {
 			</Button>
 		);
 	};
+
+	const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
+		console.log(values); // Log the validated values
+		// Create a FormData object and append the values
+		const formData = new FormData();
+		Object.entries(values).forEach(([key, value]) => {
+			formData.append(key, value);
+		});
+		formData.append('callbackUrl', callbackUrl);
+
+		// Call the server action
+		startTransition(async () => {
+			await action(formData);
+		});
+	};
 	return (
-		<form action={action}>
-			<input type='hidden' name='callbackUrl' value={callbackUrl} />
-			<div className='space-y-6'>
-				<div>
-					<Label htmlFor='name'>Name</Label>
-					<Input
-						id='name'
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)}>
+				<input type='hidden' name='callbackUrl' value={callbackUrl} />
+				<div className='space-y-6'>
+					<SignUpFormField
 						name='name'
-						type='text'
-						required
-						autoComplete='name'
-						defaultValue={signUpDefaultValues.name}
+						label='Name'
+						placeholder='Name'
+						formControl={form.control}
 					/>
-				</div>
-				<div>
-					<Label htmlFor='email'>Email</Label>
-					<Input
-						id='email'
+					<SignUpFormField
 						name='email'
-						type='email'
-						required
-						autoComplete='email'
-						defaultValue={signUpDefaultValues.email}
+						label='Email'
+						placeholder='Email'
+						inputType='email'
+						formControl={form.control}
 					/>
-				</div>
-				<div>
-					<Label htmlFor='password'>Password</Label>
-					<Input
-						id='password'
+					<SignUpFormField
 						name='password'
-						type='password'
-						required
-						autoComplete='password'
-						defaultValue={signUpDefaultValues.password}
+						label='Password'
+						placeholder='Password'
+						inputType='password'
+						formControl={form.control}
 					/>
-				</div>
-				<div>
-					<Label htmlFor='confirmPassword'>Confirm Password</Label>
-					<Input
-						id='confirmPassword'
+					<SignUpFormField
 						name='confirmPassword'
-						type='password'
-						required
-						autoComplete='confirmPassword'
-						defaultValue={signUpDefaultValues.confirmPassword}
+						label='Confirm Password'
+						placeholder='Confirm Password'
+						inputType='password'
+						formControl={form.control}
 					/>
+					<div>
+						<SignUpButton />
+					</div>
+					{data && !data.success && (
+						<div className='text-center text-destructive'>{data.message}</div>
+					)}
+					<div className='text-sm text-center text-muted-foreground'>
+						Already have an account?{' '}
+						<Link href='/sign-in' target='self' className='link'>
+							Sign In
+						</Link>
+					</div>
 				</div>
-				<div>
-					<SignUpButton />
-				</div>
-				{data && !data.success && (
-					<div className='text-center text-destructive'>{data.message}</div>
-				)}
-				<div className='text-sm text-center text-muted-foreground'>
-					Already have an account?{' '}
-					<Link href='/sign-in' target='self' className='link'>
-						Sign In
-					</Link>
-				</div>
-			</div>
-		</form>
+			</form>
+		</Form>
 	);
 };
 
