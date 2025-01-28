@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { signUpDefaultValues } from '@/lib/constants';
 import Link from 'next/link';
-import { startTransition, useActionState } from 'react';
-// import { useFormStatus } from 'react-dom';
+import { startTransition, useActionState, useState } from 'react';
+
 import { signUpUser } from '@/lib/actions/user.actions';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -28,9 +28,20 @@ const SignUpForm = () => {
 		defaultValues: signUpDefaultValues,
 	});
 
-	const {
-		formState: { isSubmitting }, // Get the isSubmitting state from React Hook Form
-	} = form;
+	// State to handle pending status manually
+	const [isPending, setIsPending] = useState(false);
+
+	const SignUpButton = () => {
+		return (
+			<Button
+				type='submit'
+				disabled={isPending}
+				className='w-full'
+				variant='default'>
+				{isPending ? 'Creating account...' : 'Sign Up'}
+			</Button>
+		);
+	};
 
 	const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
 		console.log('Form values:', values); // Debug: Log form values
@@ -42,37 +53,13 @@ const SignUpForm = () => {
 		});
 		formData.append('callbackUrl', callbackUrl);
 
-		console.log('FormData:', formData); // Debug: Log FormData
+		setIsPending(true);
 
-		// Wrap the action call in startTransition
+		// Call the server action
 		startTransition(async () => {
-			console.log('Form submission started'); // Debug: Log submission start
 			await action(formData);
-			console.log('Form submission completed'); // Debug: Log submission completion
 		});
 	};
-
-	// const SignUpButton = () => {
-	// 	const { pending } = useFormStatus();
-
-	// 	return (
-	// 		<Button type="submit" disabled={pending} className='w-full' variant='default'>
-	// 			{pending ? 'Creating account...' : 'Sign Up'}
-	// 		</Button>
-	// 	);
-	// };
-	const SignUpButton = ({ isSubmitting }: { isSubmitting: boolean }) => {
-		return (
-			<Button
-				type='submit'
-				disabled={isSubmitting}
-				className='w-full'
-				variant='default'>
-				{isSubmitting ? 'Creating account...' : 'Sign Up'}
-			</Button>
-		);
-	};
-
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -106,8 +93,7 @@ const SignUpForm = () => {
 						formControl={form.control}
 					/>
 					<div>
-						<SignUpButton isSubmitting={isSubmitting} />{' '}
-						{/* Button is inside the form */}
+						<SignUpButton />
 					</div>
 					{data && !data.success && (
 						<div className='text-center text-destructive'>{data.message}</div>
