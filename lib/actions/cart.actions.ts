@@ -3,10 +3,28 @@
 import { cookies } from 'next/headers';
 
 import { CartItem } from '@/types';
-import { convertToPlainObject, formatError } from '../utils';
+import { convertToPlainObject, formatError, round2 } from '../utils';
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
-import { cartItemSchema } from '../validators';
+import { cartItemSchema, insertCartSchema } from '../validators';
+import { revalidatePath } from 'next/cache';
+
+// Calculate cart prices
+const calcPrice = (items: CartItem[]) => {
+	const itemsPrice = round2(
+			items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0),
+		),
+		shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+		taxPrice = round2(0.15 * itemsPrice),
+		totalPrice = round2(itemsPrice + taxPrice + shippingPrice);
+
+	return {
+		itemsPrice: itemsPrice.toFixed(2),
+		shippingPrice: shippingPrice.toFixed(2),
+		taxPrice: taxPrice.toFixed(2),
+		totalPrice: totalPrice.toFixed(2),
+	};
+};
 
 export async function addItemToCart(data: CartItem) {
 	try {
@@ -25,22 +43,42 @@ export async function addItemToCart(data: CartItem) {
 		// Parse and validate item
 		const item = cartItemSchema.parse(data);
 
-		// Get Product from database
+		// Find product from database
 		const product = await prisma.product.findFirst({
 			where: { id: item.productId }, // 'id' is the product ID in the DB, 'productId' is the requested item's id (based on cartItemSchema)
 		});
+		if (!product) throw new Error('Product not found');
+
+		if (!cart) {
+			// Create new cart object
+			const newCart = insertCartSchema.parse({
+				userId: userId,
+				items: [item], // when we are adding an item to cart, it is a single item but items is an array, so we can just pass the item inside a bracket [item]
+				sessionCartId: sessionCartId,
+				...calcPrice([item]),
+			});
+			// Add cart to database
+			await prisma.cart.create({
+				data: newCart,
+			});
+
+			// Revalidate product page
+			revalidatePath(`/product/${product.slug}`);
+
+			return {
+				success: true,
+				message: 'Item added to cart',
+			};
+		} else {
+		}
 
 		// TESTING
-		console.log({
-			'Session Cart ID': sessionCartId,
-			'User ID': userId,
-			'Item Requested': item,
-			'Product Found': product,
-		});
-		return {
-			success: true,
-			message: 'Item added to cart',
-		};
+		// console.log({
+		// 	'Session Cart ID': sessionCartId,
+		// 	'User ID': userId,
+		// 	'Item Requested': item,
+		// 	'Product Found': product,
+		// });
 	} catch (error) {
 		return {
 			success: false,
