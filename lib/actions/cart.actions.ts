@@ -26,6 +26,35 @@ const calcPrice = (items: CartItem[]) => {
 	};
 };
 
+// Get My Cart
+export async function getMyCart() {
+	// Check for the cart cookie
+	const sessionCartId = (await cookies()).get('sessionCartId')?.value;
+	if (!sessionCartId) throw new Error('Cart session not found');
+
+	// Get session and user ID. Get them with the auth function
+	const session = await auth();
+	const userId = session?.user?.id ? (session.user.id as string) : undefined;
+
+	// Get users cart by the userId from database, if guest by sessionID
+	const cart = await prisma.cart.findFirst({
+		where: userId ? { userId: userId } : { sessionCartId: sessionCartId },
+	});
+
+	if (!cart) return undefined;
+
+	// Convert decimals and return
+	return convertToPlainObject({
+		...cart,
+		items: cart.items as CartItem[],
+		itemsPrice: cart.itemsPrice.toString(),
+		totalPrice: cart.totalPrice.toString(),
+		shippingPrice: cart.shippingPrice.toString(),
+		taxPrice: cart.taxPrice.toString(),
+	});
+}
+
+// Add To Cart
 export async function addItemToCart(data: CartItem) {
 	try {
 		// Check for the cart cookie
@@ -72,7 +101,7 @@ export async function addItemToCart(data: CartItem) {
 		} else {
 			// Check if item is already in cart. getting value,
 			const existItem = (cart.items as CartItem[]).find(
-				(thisItem) => thisItem.productId === item.productId,
+				(x) => x.productId === item.productId, // find x item with productId equal to item.productId of being added
 			);
 			// then check
 			if (existItem) {
@@ -83,7 +112,7 @@ export async function addItemToCart(data: CartItem) {
 
 				// Increase the quantity
 				(cart.items as CartItem[]).find(
-					(thisItem) => thisItem.productId === item.productId,
+					(x) => x.productId === item.productId,
 				)!.qty = existItem.qty + 1;
 			} else {
 				// If item does not exist in cart
@@ -120,29 +149,59 @@ export async function addItemToCart(data: CartItem) {
 	}
 }
 
-export async function getMyCart() {
-	// Check for the cart cookie
-	const sessionCartId = (await cookies()).get('sessionCartId')?.value;
-	if (!sessionCartId) throw new Error('Cart session not found');
+// Remove Item From Cart
+export async function removeItemFromCart(productId: string) {
+	try {
+		const sessionCartId = (await cookies()).get('sessionCartId')?.value;
+		if (!sessionCartId) throw new Error('Cart session not found');
 
-	// Get session and user ID. Get them with the auth function
-	const session = await auth();
-	const userId = session?.user?.id ? (session.user.id as string) : undefined;
+		// Find product from database
+		const product = await prisma.product.findFirst({
+			where: { id: productId },
+		});
+		if (!product) throw new Error('Product not found');
 
-	// Get users cart by the userId from database, if guest by sessionID
-	const cart = await prisma.cart.findFirst({
-		where: userId ? { userId: userId } : { sessionCartId: sessionCartId },
-	});
+		// Get user cart
+		const cart = await getMyCart();
+		if (!cart) throw new Error('Cart not found');
 
-	if (!cart) return undefined;
+		// Check if item is already in cart.
+		const exist = (cart.items as CartItem[]).find(
+			(x) => x.productId === productId, // find x item with productId equal to productId of being added
+		);
+		if (!exist) throw new Error('Item not found');
 
-	// Convert decimals and return
-	return convertToPlainObject({
-		...cart,
-		items: cart.items as CartItem[],
-		itemsPrice: cart.itemsPrice.toString(),
-		totalPrice: cart.totalPrice.toString(),
-		shippingPrice: cart.shippingPrice.toString(),
-		taxPrice: cart.taxPrice.toString(),
-	});
+		// Check if only one in qty
+		if (exist.qty === 1) {
+			// Remove from cart
+			cart.items = (cart.items as CartItem[]).filter(
+				(x) => x.productId !== exist.productId,
+			);
+		} else {
+			// Decrease qty
+			(cart.items as CartItem[]).find((x) => x.productId === productId)!.qty =
+				exist.qty - 1;
+		}
+
+		// Update cart in database
+		await prisma.cart.update({
+			where: { id: cart.id },
+			data: {
+				items: cart.items,
+				...calcPrice(cart.items),
+			},
+		});
+
+		revalidatePath(`/product/${product.slug}`);
+
+		return {
+			success: true,
+			message: `${product.name} was removed from cart`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: formatError(error),
+		};
+	}
 }
