@@ -3,6 +3,7 @@ import {
 	insertProductSchema,
 	insertCartSchema,
 	cartItemSchema,
+	shippingAddressSchema,
 } from '@/lib/validators';
 import { signUpFormSchema } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
@@ -25,3 +26,5 @@ export type Product = z.infer<typeof insertProductSchema> & {
 export type Cart = z.infer<typeof insertCartSchema>;
 
 export type CartItem = z.infer<typeof cartItemSchema>;
+
+export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
