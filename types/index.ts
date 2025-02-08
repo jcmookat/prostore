@@ -22,13 +22,10 @@ export type Product = z.infer<typeof insertProductSchema> & {
 	rating: string;
 	createdAt: Date; // not inserted but created automatically in the DB
 };
-
 export type Cart = z.infer<typeof insertCartSchema>;
-
 export type CartItem = z.infer<typeof cartItemSchema>;
 
 export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
-
 export type ShippingAddressFormFieldProps = {
 	name: FieldPath<z.infer<typeof shippingAddressSchema>>;
 	label: string;

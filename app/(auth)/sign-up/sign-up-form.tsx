@@ -3,16 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { signUpDefaultValues } from '@/lib/constants';
 import Link from 'next/link';
-import { startTransition, useActionState, useState } from 'react';
+import { useActionState, useTransition } from 'react';
 
 import { signUpUser } from '@/lib/actions/user.actions';
 import { useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import SignUpFormField from './sign-up-form-field';
 import { signUpFormSchema } from '@/lib/validators';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
+import { Loader } from 'lucide-react';
 
 const SignUpForm = () => {
 	const [data, action] = useActionState(signUpUser, {
@@ -28,36 +29,31 @@ const SignUpForm = () => {
 		defaultValues: signUpDefaultValues,
 	});
 
-	// State to handle pending status manually
-	const [isPending, setIsPending] = useState(false);
+	const [isPending, startTransition] = useTransition();
 
-	const SignUpButton = () => {
-		return (
-			<Button
-				type='submit'
-				disabled={isPending}
-				className='w-full'
-				variant='default'>
-				{isPending ? 'Creating account...' : 'Sign Up'}
-			</Button>
-		);
-	};
-
-	const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
-		console.log('Form values:', values); // Debug: Log form values
-
-		// Create a FormData object and append the values
-		const formData = new FormData();
-		Object.entries(values).forEach(([key, value]) => {
-			formData.append(key, value);
-		});
-		formData.append('callbackUrl', callbackUrl);
-
-		setIsPending(true);
-
-		// Call the server action
+	const onSubmit: SubmitHandler<z.infer<typeof signUpFormSchema>> = async (
+		values,
+	) => {
 		startTransition(async () => {
-			await action(formData);
+			try {
+				const formData = new FormData();
+
+				Object.entries(values).forEach(([key, value]) => {
+					// Convert non-string values to strings
+					formData.append(
+						key,
+						typeof value === 'object' ? JSON.stringify(value) : String(value),
+					);
+				});
+
+				if (callbackUrl) {
+					formData.append('callbackUrl', callbackUrl);
+				}
+
+				await action(formData);
+			} catch (error) {
+				console.error('Error submitting form:', error);
+			}
 		});
 	};
 	return (
@@ -93,7 +89,19 @@ const SignUpForm = () => {
 						formControl={form.control}
 					/>
 					<div>
-						<SignUpButton />
+						<Button
+							type='submit'
+							disabled={isPending}
+							className='w-full'
+							variant='default'>
+							{isPending ? (
+								<>
+									<Loader className='w-4 h-4 animate-spin' /> Submitting
+								</>
+							) : (
+								'Sign Up'
+							)}
+						</Button>
 					</div>
 					{data && !data.success && (
 						<div className='text-center text-destructive'>{data.message}</div>
