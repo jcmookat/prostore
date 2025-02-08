@@ -3,9 +3,9 @@ import {
 	insertProductSchema,
 	insertCartSchema,
 	cartItemSchema,
+	signUpFormSchema,
 	shippingAddressSchema,
 } from '@/lib/validators';
-import { signUpFormSchema } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
 export type SignupFormFieldProps = {
@@ -28,3 +28,12 @@ export type Cart = z.infer<typeof insertCartSchema>;
 export type CartItem = z.infer<typeof cartItemSchema>;
 
 export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
+
+export type ShippingAddressFormFieldProps = {
+	name: FieldPath<z.infer<typeof shippingAddressSchema>>;
+	label: string;
+	placeholder: string;
+	description?: string;
+	inputType?: string;
+	formControl: Control<z.infer<typeof shippingAddressSchema>, any>;
+};
