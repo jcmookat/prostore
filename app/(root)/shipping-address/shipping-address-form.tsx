@@ -22,7 +22,7 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof shippingAddressSchema>>({
 		resolver: zodResolver(shippingAddressSchema),
-		defaultValues: address || shippingAddressDefaultValues,
+		defaultValues: address || shippingAddressDefaultValues, // address - from user.address
 	});
 
 	const [isPending, startTransition] = useTransition();

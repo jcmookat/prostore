@@ -85,6 +85,10 @@ export const config = {
 			}
 			return token;
 		},
+		// Redirects users to /cart after sign-in
+		// async redirect({ url, baseUrl }: any) {
+		// 	return baseUrl + '/cart';
+		// },
 		...authConfig.callbacks,
 	},
 };
