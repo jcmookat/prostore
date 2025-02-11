@@ -36,7 +36,7 @@ export const config = {
 						credentials.password as string,
 						user.password,
 					);
-					// If password is corrent, return user
+					// If password is correct, return user
 					if (isMatch) {
 						return {
 							id: user.id,
@@ -46,7 +46,7 @@ export const config = {
 						};
 					}
 				}
-				// If use does not exist, or password does not much return null
+				// If user does not exist, or password does not much return null
 				return null;
 			},
 		}),
@@ -58,8 +58,6 @@ export const config = {
 			session.user.role = token.role;
 			session.user.name = token.name;
 
-			// console.log(token);
-
 			// If there is an update, set the user name
 			if (trigger === 'update') {
 				session.user.name = user.name;
@@ -70,6 +68,7 @@ export const config = {
 		async jwt({ token, user, trigger, session }: any) {
 			// Assign user fields to token
 			if (user) {
+				token.id = user.id;
 				token.role = user.role;
 
 				// If user has no name, then use the first part of email (ex, google auth provider)
@@ -81,6 +80,33 @@ export const config = {
 						where: { id: user.id },
 						data: { name: token.name },
 					});
+				}
+
+				// Persist Session Cart - Check trigger
+				if (trigger === 'signIn' || trigger === 'signUp') {
+					// Get sessionCartId from cookies
+					const cookiesObject = await cookies();
+					const sessionCartId = cookiesObject.get('sessionCartId')?.value;
+
+					if (sessionCartId) {
+						// Get from DB
+						const sessionCart = await prisma.cart.findFirst({
+							where: { sessionCartId: sessionCartId },
+						});
+
+						if (sessionCart) {
+							// Delete current user cart
+							await prisma.cart.deleteMany({
+								where: { userId: user.id },
+							});
+
+							// Assign new cart
+							await prisma.cart.update({
+								where: { id: sessionCart.id },
+								data: { userId: user.id },
+							});
+						}
+					}
 				}
 			}
 			return token;
