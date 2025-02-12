@@ -5,6 +5,7 @@ import {
 	cartItemSchema,
 	signUpFormSchema,
 	shippingAddressSchema,
+	paymentMethodSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
@@ -34,3 +35,5 @@ export type ShippingAddressFormFieldProps = {
 	inputType?: string;
 	formControl: Control<z.infer<typeof shippingAddressSchema>, any>;
 };
+
+export type PaymentMethod = string | null;
