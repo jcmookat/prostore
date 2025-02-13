@@ -6,6 +6,8 @@ import {
 	signUpFormSchema,
 	shippingAddressSchema,
 	paymentMethodSchema,
+	insertOrderSchema,
+	insertOrderItemSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
@@ -36,10 +38,23 @@ export type ShippingAddressFormFieldProps = {
 	formControl: Control<z.infer<typeof shippingAddressSchema>, any>;
 };
 
-export type PaymentMethod = string | null;
+export type PaymentMethod = {
+	type: string | null;
+};
 export type PaymentMethodFormFieldProps = {
 	label: string;
 	value: string;
-	key?: string;
 	checked?: boolean;
 };
+
+export type Order = z.infer<typeof insertOrderSchema> & {
+	id: string;
+	createdAt: Date;
+	isPaid: Boolean;
+	paidAt: Date | null;
+	isDelivered: Boolean;
+	deliveredAt: Date | null;
+	orderitems: OrderItem[];
+	user: { name: string; email: string };
+};
+export type OrderItem = z.infer<typeof insertOrderItemSchema>;

@@ -24,7 +24,7 @@ import { updateUserPaymentMethod } from '@/lib/actions/user.actions';
 const PaymentMethodForm = ({
 	prefferedPaymentMethod,
 }: {
-	prefferedPaymentMethod: PaymentMethod;
+	prefferedPaymentMethod: PaymentMethod['type'];
 }) => {
 	const router = useRouter();
 	const { toast } = useToast();
