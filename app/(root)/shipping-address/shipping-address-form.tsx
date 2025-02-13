@@ -8,12 +8,11 @@ import { ShippingAddress } from '@/types';
 import { shippingAddressSchema } from '@/lib/validators';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { shippingAddressDefaultValues } from '@/lib/constants';
 import ShippingAddressFormField from './shipping-address-form-field';
-import { ArrowRight, Loader } from 'lucide-react';
 import { updateUserAddress } from '@/lib/actions/user.actions';
+import CheckoutButton from '@/components/shared/checkout-button';
 
 const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
 	const router = useRouter();
@@ -95,19 +94,8 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
 								formControl={form.control}
 							/>
 						</div>
-						<div className='flex gap-2'>
-							<Button
-								type='submit'
-								disabled={isPending}
-								className='w-full'
-								variant='default'>
-								{isPending ? (
-									<Loader className='w-4 h-4 animate-spin' />
-								) : (
-									<ArrowRight className='w-4 h-4' />
-								)}
-								Continue
-							</Button>
+						<div className='flex gap-2 pt-3'>
+							<CheckoutButton isPending={isPending} />
 						</div>
 					</form>
 				</Form>

@@ -37,3 +37,9 @@ export type ShippingAddressFormFieldProps = {
 };
 
 export type PaymentMethod = string | null;
+export type PaymentMethodFormFieldProps = {
+	label: string;
+	value: string;
+	key?: string;
+	checked?: boolean;
+};
