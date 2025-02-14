@@ -26,7 +26,7 @@ export async function createOrder() {
 			return {
 				success: false,
 				message: 'Your cart is empty',
-				redirecTo: '/cart',
+				redirectTo: '/cart',
 			};
 		}
 
@@ -34,7 +34,7 @@ export async function createOrder() {
 			return {
 				success: false,
 				message: 'No shipping address',
-				redirecTo: '/shipping-address',
+				redirectTo: '/shipping-address',
 			};
 		}
 
@@ -42,7 +42,7 @@ export async function createOrder() {
 			return {
 				success: false,
 				message: 'No payment method',
-				redirecTo: '/payment-method',
+				redirectTo: '/payment-method',
 			};
 		}
 
