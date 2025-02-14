@@ -17,7 +17,6 @@ import {
 	TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { formatNumberWithDecimal } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
 
@@ -107,7 +106,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
 											</Button>
 										</TableCell>
 										<TableCell className='text-right'>
-											${formatNumberWithDecimal(Number(item.price))}
+											{formatCurrency(item.price)}
 										</TableCell>
 									</TableRow>
 								))}
