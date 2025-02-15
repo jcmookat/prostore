@@ -38,7 +38,7 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
 					<Card>
 						<CardContent className='p-4 gap-4'>
 							<h2 className='text-xl pb-4'>Payment Method</h2>
-							<p>{paymentMethod}</p>
+							<p className='mb-2'>{paymentMethod}</p>
 							{isPaid ? (
 								<Badge variant='secondary'>
 									Paid at {formatDateTime(paidAt!).dateTime}
@@ -52,7 +52,7 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
 						<CardContent className='p-4 gap-4'>
 							<h2 className='text-xl pb-4'>Shipping Address</h2>
 							<p>{shippingAddress.fullName}</p>
-							<p>
+							<p className='mb-2'>
 								{shippingAddress.streetAddress}, {shippingAddress.city},{' '}
 								{shippingAddress.postalCode}, {shippingAddress.country}{' '}
 							</p>
