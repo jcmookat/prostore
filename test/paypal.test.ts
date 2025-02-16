@@ -1,4 +1,4 @@
-import { generateAccessToken } from '../lib/paypal';
+import { generateAccessToken, paypal } from '../lib/paypal';
 
 // Generate a Paypal access token
 test('generate a Paypal access token', async () => {
@@ -8,4 +8,37 @@ test('generate a Paypal access token', async () => {
 	// Should be a string that is not empty
 	expect(typeof tokenResponse).toBe('string');
 	expect(tokenResponse.length).toBeGreaterThan(0);
+});
+
+// Test to create a paypal order
+test('creates a paypal order', async () => {
+	const price = 10.0;
+
+	const orderResponse = await paypal.createOrder(price);
+	console.log(orderResponse);
+
+	// Ensure the order response contains expected fields
+	expect(orderResponse).toHaveProperty('id');
+	expect(orderResponse).toHaveProperty('status');
+	expect(orderResponse.status).toBe('CREATED'); // PayPal returns 'CREATED' for new orders
+});
+
+// Test to capture payment with mock order
+test('simulates capturing a PayPal order', async () => {
+	const orderId = '100'; // Mock order ID
+
+	// Mock the capturePayment function to return a successful response
+	const mockCapturePayment = jest
+		.spyOn(paypal, 'capturePayment')
+		.mockResolvedValue({
+			status: 'COMPLETED',
+		});
+
+	// Call the capturePayment function with the mock order ID
+	const captureResponse = await paypal.capturePayment(orderId);
+	// Ensure the capture response contains expected fields
+	expect(captureResponse).toHaveProperty('status', 'COMPLETED');
+
+	// Clean up mock
+	mockCapturePayment.mockRestore();
 });
