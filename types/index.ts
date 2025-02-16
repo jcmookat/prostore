@@ -8,6 +8,7 @@ import {
 	paymentMethodSchema,
 	insertOrderSchema,
 	insertOrderItemSchema,
+	paymentResultSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
@@ -58,3 +59,5 @@ export type Order = z.infer<typeof insertOrderSchema> & {
 	user: { name: string; email: string };
 };
 export type OrderItem = z.infer<typeof insertOrderItemSchema>;
+
+export type PaymentResult = z.infer<typeof paymentResultSchema>;
