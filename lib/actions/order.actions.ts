@@ -121,7 +121,7 @@ export async function getOrderById(orderId: string) {
 
 // Create new paypal order
 // Get order id from database. Paypal order id is different from orderId. Paypal creates an order id and will be added to the paymentResult {}
-export async function createPaypalOrder(orderId: string) {
+export async function createPayPalOrder(orderId: string) {
 	try {
 		// Get order from database
 		const order = await prisma.order.findFirst({
