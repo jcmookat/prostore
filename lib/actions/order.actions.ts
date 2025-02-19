@@ -292,14 +292,14 @@ export async function getMyOrders({
 	if (!session) throw new Error('User is not authenticated');
 
 	const data = await prisma.order.findMany({
-		where: { userId: session?.user?.id! },
+		where: { userId: session.user.id! },
 		orderBy: { createdAt: 'desc' },
 		take: limit,
 		skip: (page - 1) * limit, // for pagination, for example, you have 6 total orders and you are in the second page, you wanna skip the first 3
 	});
 
 	const dataCount = await prisma.order.count({
-		where: { userId: session?.user?.id! },
+		where: { userId: session.user.id! },
 	});
 
 	return {
