@@ -1,7 +1,7 @@
-import { Metadata } from "next";
-import { getMyOrders } from "@/lib/actions/order.actions";
-import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
-import Link from "next/link";
+import { Metadata } from 'next';
+import { getMyOrders } from '@/lib/actions/order.actions';
+import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -9,11 +9,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import Pagination from '@/components/shared/pagination';
 
 export const metadata: Metadata = {
-  title: "My Orders",
+  title: 'My Orders',
 };
 
 const OrdersPage = async (props: {
@@ -51,7 +52,7 @@ const OrdersPage = async (props: {
                 <TableCell>
                   {order.isPaid && order.paidAt ? (
                     <>
-                      <Badge variant="default">Paid</Badge>{" "}
+                      <Badge variant="default">Paid</Badge>{' '}
                       {formatDateTime(order.paidAt).dateTime}
                     </>
                   ) : (
@@ -61,7 +62,7 @@ const OrdersPage = async (props: {
                 <TableCell>
                   {order.isDelivered && order.deliveredAt ? (
                     <>
-                      <Badge variant="default">Delivered</Badge>{" "}
+                      <Badge variant="default">Delivered</Badge>{' '}
                       {formatDateTime(order.deliveredAt).dateTime}
                     </>
                   ) : (
@@ -77,6 +78,9 @@ const OrdersPage = async (props: {
             ))}
           </TableBody>
         </Table>
+        {orders.totalPages >= 1 && (
+          <Pagination page={Number(page) || 1} totalPages={orders.totalPages} />
+        )}
       </div>
     </div>
   );
