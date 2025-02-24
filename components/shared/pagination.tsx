@@ -3,6 +3,7 @@ import { type ReactElement } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '../ui/button';
 import { formUrlQuery } from '@/lib/utils';
+import Link from 'next/link';
 
 type PaginationProps = {
   page: number | string;
@@ -29,7 +30,7 @@ export default function Pagination({
     router.push(newUrl);
   };
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 justify-center mt-5">
       <Button
         variant="outline"
         className="w-28"
@@ -38,6 +39,29 @@ export default function Pagination({
       >
         Previous
       </Button>
+      {[...new Array(totalPages)].map((_, index) => {
+        const pageNumber = index + 1;
+        return (
+          <Button
+            asChild
+            key={pageNumber}
+            variant={Number(page) === pageNumber ? 'default' : 'outline'}
+            className="w-10"
+            disabled={Number(page) === pageNumber}
+          >
+            <Link
+              href={{
+                pathname: '/user/orders',
+                query: {
+                  page: pageNumber,
+                },
+              }}
+            >
+              {pageNumber}
+            </Link>
+          </Button>
+        );
+      })}
       <Button
         variant="outline"
         className="w-28"
