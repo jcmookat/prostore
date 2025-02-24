@@ -52,7 +52,9 @@ const OrdersPage = async (props: {
                 <TableCell>
                   {order.isPaid && order.paidAt ? (
                     <>
-                      <Badge variant="default">Paid</Badge>{' '}
+                      <Badge variant="default" className="mr-1">
+                        Paid
+                      </Badge>{' '}
                       {formatDateTime(order.paidAt).dateTime}
                     </>
                   ) : (
@@ -62,7 +64,9 @@ const OrdersPage = async (props: {
                 <TableCell>
                   {order.isDelivered && order.deliveredAt ? (
                     <>
-                      <Badge variant="default">Delivered</Badge>{' '}
+                      <Badge variant="default" className="mr-1">
+                        Delivered
+                      </Badge>{' '}
                       {formatDateTime(order.deliveredAt).dateTime}
                     </>
                   ) : (
@@ -78,7 +82,7 @@ const OrdersPage = async (props: {
             ))}
           </TableBody>
         </Table>
-        {orders.totalPages >= 1 && (
+        {orders.totalPages > 1 && (
           <Pagination page={Number(page) || 1} totalPages={orders.totalPages} />
         )}
       </div>

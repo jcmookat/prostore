@@ -11,6 +11,7 @@ import { Form } from '@/components/ui/form';
 import ProfileFormFields from './profile-form-field';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { updateProfile } from '@/lib/actions/user.actions';
 
 export default function ProfileForm(): ReactElement {
   const { data: session, update } = useSession();
@@ -30,16 +31,27 @@ export default function ProfileForm(): ReactElement {
     values,
   ) => {
     startTransition(async () => {
-      console.log(values);
-      // const res = await updateUserAddress(values);
-      // if (!res.success) {
-      //   toast({
-      //     variant: 'destructive',
-      //     description: res.message,
-      //   });
-      //   return;
-      // }
-      // router.push('/payment-method');
+      const res = await updateProfile(values);
+      if (!res.success) {
+        toast({
+          variant: 'destructive',
+          description: res.message,
+        });
+        return;
+      }
+
+      const newSession = {
+        ...session,
+        user: {
+          ...session?.user,
+          name: values.name,
+        },
+      };
+      await update(newSession);
+
+      toast({
+        description: res.message,
+      });
     });
   };
 
@@ -69,7 +81,6 @@ export default function ProfileForm(): ReactElement {
         >
           {isPending ? (
             <>
-              w
               <Loader className="w-4 h-4 animate-spin" /> Updating...
             </>
           ) : (
