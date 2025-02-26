@@ -71,3 +71,8 @@ export type ProfileFormFieldsProps = {
   disabled?: boolean;
   formControl: Control<z.infer<typeof updateProfileSchema>>;
 };
+
+export type SalesDataType = {
+  month: string;
+  totalSales: number;
+}[];
