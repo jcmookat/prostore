@@ -1,5 +1,4 @@
 import { type ReactElement } from 'react';
-import { auth } from '@/auth';
 import { Metadata } from 'next';
 import { getOrderSummary } from '@/lib/actions/order.actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,17 +14,13 @@ import {
 } from '@/components/ui/table';
 import Link from 'next/link';
 import Charts from './charts';
+import { requireAdmin } from '@/lib/auth-guard';
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard',
 };
 export default async function AdminDashboardPage(): Promise<ReactElement> {
-  const session = await auth();
-  const userRole = session?.user?.role;
-
-  if (userRole !== 'admin') {
-    throw new Error('User is not authorized.');
-  }
+  await requireAdmin();
 
   const summary = await getOrderSummary();
   return (
