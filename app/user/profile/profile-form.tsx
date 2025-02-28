@@ -12,10 +12,12 @@ import ProfileFormFields from './profile-form-field';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { updateProfile } from '@/lib/actions/user.actions';
+import { useRouter } from 'next/navigation';
 
 export default function ProfileForm(): ReactElement {
   const { data: session, update } = useSession();
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     resolver: zodResolver(updateProfileSchema),
@@ -48,6 +50,8 @@ export default function ProfileForm(): ReactElement {
         },
       };
       await update(newSession);
+
+      router.refresh();
 
       toast({
         description: res.message,

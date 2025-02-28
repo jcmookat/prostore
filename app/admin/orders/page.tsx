@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { getAllOrders } from '@/lib/actions/order.actions';
+import { deleteOrder, getAllOrders } from '@/lib/actions/order.actions';
 import { requireAdmin } from '@/lib/auth-guard';
 import { Metadata } from 'next';
 import {
@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
+import DeleteDialog from '@/components/shared/delete-dialog';
 
 export const metadata: Metadata = {
   title: 'Admin Orders',
@@ -28,7 +29,6 @@ export default async function AdminOrdersPage(props: {
     page: Number(page),
   });
 
-  console.log(orders);
   return (
     <>
       {' '}
@@ -63,7 +63,7 @@ export default async function AdminOrdersPage(props: {
                         {formatDateTime(order.paidAt).dateTime}
                       </>
                     ) : (
-                      <Badge variant="destructive">Not paid</Badge>
+                      <Badge variant="secondary">Not paid</Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -75,13 +75,14 @@ export default async function AdminOrdersPage(props: {
                         {formatDateTime(order.deliveredAt).dateTime}
                       </>
                     ) : (
-                      <Badge variant="destructive">Not delivered</Badge>
+                      <Badge variant="secondary">Not delivered</Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/order/${order.id}`}>Details</Link>
                     </Button>
+                    <DeleteDialog id={order.id} action={deleteOrder} />
                   </TableCell>
                 </TableRow>
               ))}

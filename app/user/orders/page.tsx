@@ -59,7 +59,7 @@ const OrdersPage = async (props: {
                       {formatDateTime(order.paidAt).dateTime}
                     </>
                   ) : (
-                    <Badge variant="destructive">Not paid</Badge>
+                    <Badge variant="secondary">Not paid</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -71,7 +71,7 @@ const OrdersPage = async (props: {
                       {formatDateTime(order.deliveredAt).dateTime}
                     </>
                   ) : (
-                    <Badge variant="destructive">Not delivered</Badge>
+                    <Badge variant="secondary">Not delivered</Badge>
                   )}
                 </TableCell>
                 <TableCell>
