@@ -395,8 +395,8 @@ export async function deleteOrder(id: string) {
 export async function updateOrderToPaidByCOD(orderId: string) {
   try {
     await updateOrderToPaid({ orderId });
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true, message: 'Order paid successfully' };
+    revalidatePath(`/order/${orderId}`);
+    return { success: true, message: 'Order marked as paid' };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
