@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react';
 import Link from 'next/link';
-import { getAllProducts } from '@/lib/actions/product.actions';
+import { deleteProduct, getAllProducts } from '@/lib/actions/product.actions';
 import { formatCurrency, formatId } from '@/lib/utils';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import DeleteDialog from '@/components/shared/delete-dialog';
 
 export default async function AdminProductsPage(props: {
   searchParams: Promise<{
@@ -67,7 +68,7 @@ export default async function AdminProductsPage(props: {
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/products/${product.id}`}>Edit</Link>
                   </Button>
-                  {/* DELETE HERE */}
+                  <DeleteDialog id={product.id} action={deleteProduct} />
                 </TableCell>
               </TableRow>
             ))}
