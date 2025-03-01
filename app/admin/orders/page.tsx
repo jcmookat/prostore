@@ -41,6 +41,7 @@ export default async function AdminOrdersPage(props: {
                 <TableHead>ID</TableHead>
                 <TableHead>DATE</TableHead>
                 <TableHead>TOTAL</TableHead>
+                <TableHead>PAYMENT METHOD</TableHead>
                 <TableHead>PAID</TableHead>
                 <TableHead>DELIVERED</TableHead>
                 <TableHead>ACTIONS</TableHead>
@@ -54,6 +55,7 @@ export default async function AdminOrdersPage(props: {
                     {formatDateTime(order.createdAt).dateTime}
                   </TableCell>
                   <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
+                  <TableCell>{order.paymentMethod}</TableCell>
                   <TableCell>
                     {order.isPaid && order.paidAt ? (
                       <>
@@ -92,6 +94,7 @@ export default async function AdminOrdersPage(props: {
             <Pagination
               page={Number(page) || 1}
               totalPages={orders.totalPages}
+              pathName="/admin/orders"
             />
           )}
         </div>

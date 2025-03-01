@@ -9,12 +9,14 @@ type PaginationProps = {
   page: number | string;
   totalPages: number;
   urlParamName?: string;
+  pathName: string;
 };
 
 export default function Pagination({
   page,
   totalPages,
   urlParamName,
+  pathName,
 }: PaginationProps): ReactElement {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,7 +53,7 @@ export default function Pagination({
           >
             <Link
               href={{
-                pathname: '/user/orders',
+                pathname: pathName,
                 query: {
                   page: pageNumber,
                 },

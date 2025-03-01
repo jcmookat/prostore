@@ -37,6 +37,7 @@ const OrdersPage = async (props: {
               <TableHead>ID</TableHead>
               <TableHead>DATE</TableHead>
               <TableHead>TOTAL</TableHead>
+              <TableHead>PAYMENT METHOD</TableHead>
               <TableHead>PAID</TableHead>
               <TableHead>DELIVERED</TableHead>
               <TableHead>ACTIONS</TableHead>
@@ -50,6 +51,7 @@ const OrdersPage = async (props: {
                   {formatDateTime(order.createdAt).dateTime}
                 </TableCell>
                 <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
+                <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>
                   {order.isPaid && order.paidAt ? (
                     <>
@@ -84,7 +86,11 @@ const OrdersPage = async (props: {
           </TableBody>
         </Table>
         {orders.totalPages > 1 && (
-          <Pagination page={Number(page) || 1} totalPages={orders.totalPages} />
+          <Pagination
+            page={Number(page) || 1}
+            totalPages={orders.totalPages}
+            pathName="/user/orders"
+          />
         )}
       </div>
     </div>
