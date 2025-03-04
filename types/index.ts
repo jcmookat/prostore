@@ -33,7 +33,7 @@ export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
 export type ShippingAddressFormFieldProps = {
   name: FieldPath<z.infer<typeof shippingAddressSchema>>;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   description?: string;
   inputType?: string;
   formControl: Control<z.infer<typeof shippingAddressSchema>>;
@@ -65,7 +65,7 @@ export type PaymentResult = z.infer<typeof paymentResultSchema>;
 export type ProfileFormFieldsProps = {
   name: FieldPath<z.infer<typeof updateProfileSchema>>;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   description?: string;
   inputType?: string;
   disabled?: boolean;
@@ -76,3 +76,14 @@ export type SalesDataType = {
   month: string;
   totalSales: number;
 }[];
+
+export type ProductFormFieldProps = {
+  name: FieldPath<z.infer<typeof insertProductSchema>>;
+  label: string;
+  placeholder?: string;
+  description?: string;
+  inputType?: string;
+  disabled?: boolean;
+  checked?: boolean;
+  formControl: Control<z.infer<typeof insertProductSchema>>;
+};
