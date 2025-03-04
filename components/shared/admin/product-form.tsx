@@ -15,13 +15,14 @@ import { insertProductSchema, updateProductSchema } from '@/lib/validators';
 import { Product } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { type ReactElement } from 'react';
-import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { useTransition, type ReactElement } from 'react';
+import { ControllerRenderProps, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import ProductFormField from './product-form-field';
 import { Button } from '@/components/ui/button';
 import slugify from 'slugify';
 import ProductButton from './product-button';
+import { createProduct, updateProduct } from '@/lib/actions/product.actions';
 
 export default function ProductForm({
   type,
@@ -44,9 +45,58 @@ export default function ProductForm({
       product && type === 'Update' ? product : productDefaultValues,
   });
 
+  const [isPending, startTransition] = useTransition();
+
+  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
+    values,
+  ) => {
+    startTransition(async () => {
+      // On create
+      if (type === 'Create') {
+        const res = await createProduct(values);
+
+        if (!res.success) {
+          toast({
+            variant: 'destructive',
+            description: res.message,
+          });
+        } else {
+          toast({
+            description: res.message,
+          });
+          router.push('/admin/products');
+        }
+      }
+
+      // On update
+      if (type === 'Update') {
+        if (!productId) {
+          router.push('/admin/products');
+          return;
+        }
+        const res = await updateProduct({ ...values, id: productId });
+
+        if (!res.success) {
+          toast({
+            variant: 'destructive',
+            description: res.message,
+          });
+        } else {
+          toast({
+            description: res.message,
+          });
+          router.push('/admin/products');
+        }
+      }
+    });
+  };
   return (
     <Form {...form}>
-      <form className="space-y-8">
+      <form
+        method="post"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8"
+      >
         <div className="flex flex-col gap-5 md:flex-row">
           {/* Name */}
           <div className="w-full">
@@ -136,10 +186,7 @@ export default function ProductForm({
         </div>
         <div>
           {/* Submit */}
-          <ProductButton
-            isPending={form.formState.isSubmitting}
-            formType={type}
-          />
+          <ProductButton isPending={isPending} formType={type} />
         </div>
       </form>
     </Form>

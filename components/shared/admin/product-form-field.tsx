@@ -50,8 +50,9 @@ const ProductFormField: React.FC<ProductFormFieldProps> = ({
                 value={
                   field.value === null || field.value === undefined
                     ? ''
-                    : typeof field.value === 'boolean'
-                      ? field.value.toString()
+                    : typeof field.value === 'boolean' ||
+                        typeof field.value === 'number'
+                      ? String(field.value)
                       : field.value
                 }
                 onChange={field.onChange}
@@ -65,8 +66,9 @@ const ProductFormField: React.FC<ProductFormFieldProps> = ({
                 value={
                   field.value === null || field.value === undefined
                     ? ''
-                    : typeof field.value === 'boolean'
-                      ? field.value.toString()
+                    : typeof field.value === 'boolean' ||
+                        typeof field.value === 'number'
+                      ? String(field.value)
                       : field.value
                 }
                 onChange={(e) =>
