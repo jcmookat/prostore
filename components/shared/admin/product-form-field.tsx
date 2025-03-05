@@ -40,7 +40,7 @@ const ProductFormField: React.FC<ProductFormFieldProps> = ({
                   onCheckedChange={field.onChange}
                   disabled={disabled}
                 />
-                <span>{field.value ? 'Enabled' : 'Disabled'}</span>
+                <span>{field.value ? 'Featured' : 'Not Featured'}</span>
               </div>
             ) : inputType === 'textarea' ? (
               // Handle multiline text input

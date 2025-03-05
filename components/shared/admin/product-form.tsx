@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import slugify from 'slugify';
 import ProductButton from './product-button';
 import { createProduct, updateProduct } from '@/lib/actions/product.actions';
-import { UploadButton, UploadDropzone } from '@/lib/uploadthing';
+import { UploadDropzone } from '@/lib/uploadthing';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
@@ -94,6 +94,8 @@ export default function ProductForm({
   };
 
   const images = form.watch('images');
+  const isFeatured = form.watch('isFeatured');
+  const banner = form.watch('banner');
 
   return (
     <Form {...form}>
@@ -133,14 +135,6 @@ export default function ProductForm({
               Generate Slug
             </Button>
           </div>
-
-          {/* <ProductFormField
-            name="isFeatured"
-            label="Featured Product"
-            inputType="checkbox"
-            formControl={form.control}
-          />
-*/}
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
           {/* Category */}
@@ -184,14 +178,14 @@ export default function ProductForm({
               <FormItem className="w-full">
                 <FormLabel>Images</FormLabel>
                 <Card>
-                  <CardContent className="space-y-2 mt-2 pt-2 min-h-48">
-                    <div className="flex-center pb-2 gap-2 w-full">
+                  <CardContent className="space-y-2 min-h-48 p-3">
+                    <div className="flex-center gap-3 p-3 w-full bg-gray-100 dark:bg-gray-700 mb-4 rounded-md">
                       {images.map((image: string) => (
                         <Image
                           key={image}
                           src={image}
                           alt="product image"
-                          className="w-20 h-20 object-cover object-center rounded-sm mt-1"
+                          className="w-20 h-20 object-cover object-center rounded-md mt-1"
                           width={100}
                           height={100}
                         />
@@ -209,14 +203,6 @@ export default function ProductForm({
                             variant: 'destructive',
                             description: `ERROR! ${error.message}`,
                           });
-                        }}
-                        onUploadBegin={(name) => {
-                          // Do something once upload begins
-                          console.log('Uploading: ', name);
-                        }}
-                        onChange={(acceptedFiles) => {
-                          // Do something with the accepted files
-                          console.log('Accepted files: ', acceptedFiles);
                         }}
                         appearance={{
                           container:
@@ -236,7 +222,53 @@ export default function ProductForm({
           />
         </div>
 
-        <div className="upload-field">{/* Is Featured */}</div>
+        <div className="upload-field">
+          {/* Is Featured */}
+          <ProductFormField
+            name="isFeatured"
+            label="Featured Product"
+            inputType="checkbox"
+            formControl={form.control}
+          />
+
+          {isFeatured && banner && (
+            <div className="flex-center p-3 w-full bg-gray-100 mt-4 rounded-md dark:bg-gray-700">
+              <Image
+                src={banner}
+                alt="banner image"
+                className="w-full object-cover object-center rounded-md"
+                width={1920}
+                height={680}
+              />
+            </div>
+          )}
+
+          {isFeatured && (
+            <Card className="mt-4">
+              <CardContent className="space-y-2 min-h-48 p-3">
+                <UploadDropzone
+                  endpoint="bannerImageUploader"
+                  onClientUploadComplete={(res: { url: string }[]) => {
+                    form.setValue('banner', res[0]?.url);
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast({
+                      variant: 'destructive',
+                      description: `ERROR! ${error.message}`,
+                    });
+                  }}
+                  appearance={{
+                    container:
+                      'mt-0 w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
+                    button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
+                    allowedContent: 'text-gray-500 dark:text-white',
+                    label: 'text-gray-500 dark:text-white text-[1.2rem] mb-2',
+                  }}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </div>
         <div>
           {/* Description */}
           <ProductFormField
