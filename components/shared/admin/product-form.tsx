@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import slugify from 'slugify';
 import ProductButton from './product-button';
 import { createProduct, updateProduct } from '@/lib/actions/product.actions';
-import { UploadButton } from '@/lib/uploadthing';
+import { UploadButton, UploadDropzone } from '@/lib/uploadthing';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
@@ -184,33 +184,50 @@ export default function ProductForm({
               <FormItem className="w-full">
                 <FormLabel>Images</FormLabel>
                 <Card>
-                  <CardContent className="space-y-2 mt-2 min-h-48">
-                    <div className="flex-start space-x-2">
+                  <CardContent className="space-y-2 mt-2 pt-2 min-h-48">
+                    <div className="flex-center pb-2 gap-2 w-full">
                       {images.map((image: string) => (
                         <Image
                           key={image}
                           src={image}
                           alt="product image"
-                          className="w-20 h-20 object-cover object-center rounded-sm"
+                          className="w-20 h-20 object-cover object-center rounded-sm mt-1"
                           width={100}
                           height={100}
                         />
                       ))}
-                      <FormControl>
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue('images', [...images, res[0].url]);
-                          }}
-                          onUploadError={(error: Error) => {
-                            toast({
-                              variant: 'destructive',
-                              description: `ERROR! ${error.message}`,
-                            });
-                          }}
-                        />
-                      </FormControl>
                     </div>
+                    <FormControl>
+                      <UploadDropzone
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res: { url: string }[]) => {
+                          const newImageUrls = res.map((file) => file.url);
+                          form.setValue('images', [...images, ...newImageUrls]);
+                        }}
+                        onUploadError={(error: Error) => {
+                          toast({
+                            variant: 'destructive',
+                            description: `ERROR! ${error.message}`,
+                          });
+                        }}
+                        onUploadBegin={(name) => {
+                          // Do something once upload begins
+                          console.log('Uploading: ', name);
+                        }}
+                        onChange={(acceptedFiles) => {
+                          // Do something with the accepted files
+                          console.log('Accepted files: ', acceptedFiles);
+                        }}
+                        appearance={{
+                          container:
+                            'w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
+                          button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
+                          allowedContent: 'text-gray-500 dark:text-white',
+                          label:
+                            'text-gray-500 dark:text-white text-[1.2rem] mb-2',
+                        }}
+                      />
+                    </FormControl>
                   </CardContent>
                 </Card>
                 <FormMessage />
@@ -218,6 +235,7 @@ export default function ProductForm({
             )}
           />
         </div>
+
         <div className="upload-field">{/* Is Featured */}</div>
         <div>
           {/* Description */}

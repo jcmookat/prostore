@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 const OrdersPage = async (props: {
   searchParams: Promise<{ page: string }>;
 }) => {
-  const { page } = await props.searchParams;
-
+  const searchParams = await props.searchParams;
+  const page = Number(searchParams.page) || 1;
   const orders = await getMyOrders({
-    page: Number(page) || 1,
+    page,
   });
 
   return (
@@ -87,7 +87,7 @@ const OrdersPage = async (props: {
         </Table>
         {orders.totalPages > 1 && (
           <Pagination
-            page={Number(page) || 1}
+            page={page}
             totalPages={orders.totalPages}
             pathName="/user/orders"
           />

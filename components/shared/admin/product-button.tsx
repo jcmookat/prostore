@@ -18,11 +18,16 @@ const ProductButton = ({
       variant="default"
     >
       {isPending ? (
-        <Loader className="w-4 h-4 animate-spin" />
+        <>
+          <Loader className="w-4 h-4 animate-spin" />
+          {formType === 'Create' ? 'Creating' : 'Updating'} Product
+        </>
       ) : (
-        <ArrowRight className="w-4 h-4" />
+        <>
+          <ArrowRight className="w-4 h-4" />
+          {formType} Product
+        </>
       )}
-      {formType} Product
     </Button>
   );
 };
