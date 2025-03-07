@@ -304,10 +304,11 @@ export async function getMyOrders({
   const dataCount = await prisma.order.count({
     where: { userId: userId },
   });
+  const totalPages = Math.ceil(dataCount / limit);
 
   return {
     data,
-    totalPages: Math.ceil(dataCount / limit),
+    totalPages,
   };
 }
 
@@ -368,10 +369,11 @@ export async function getAllOrders({
   });
 
   const dataCount = await prisma.order.count();
+  const totalPages = Math.ceil(dataCount / limit);
 
   return {
     data,
-    totalPages: Math.ceil(dataCount / limit),
+    totalPages,
   };
 }
 

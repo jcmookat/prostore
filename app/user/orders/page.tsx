@@ -26,6 +26,7 @@ const OrdersPage = async (props: {
   const orders = await getMyOrders({
     page,
   });
+  const { data, totalPages } = orders;
 
   return (
     <div className="space-y-2">
@@ -44,7 +45,7 @@ const OrdersPage = async (props: {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.data.map((order) => (
+            {data.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{formatId(order.id)}</TableCell>
                 <TableCell>
@@ -85,10 +86,10 @@ const OrdersPage = async (props: {
             ))}
           </TableBody>
         </Table>
-        {orders.totalPages > 1 && (
+        {totalPages > 1 && (
           <Pagination
             page={page}
-            totalPages={orders.totalPages}
+            totalPages={totalPages}
             pathName="/user/orders"
           />
         )}

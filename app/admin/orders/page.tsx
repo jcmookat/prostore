@@ -29,6 +29,7 @@ export default async function AdminOrdersPage(props: {
   const orders = await getAllOrders({
     page,
   });
+  const { data, totalPages } = orders;
 
   return (
     <div className="space-y-2">
@@ -47,7 +48,7 @@ export default async function AdminOrdersPage(props: {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.data.map((order) => (
+            {data.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{formatId(order.id)}</TableCell>
                 <TableCell>
@@ -89,10 +90,10 @@ export default async function AdminOrdersPage(props: {
             ))}
           </TableBody>
         </Table>
-        {orders.totalPages > 1 && (
+        {totalPages > 1 && (
           <Pagination
             page={page}
-            totalPages={orders.totalPages}
+            totalPages={totalPages}
             pathName="/admin/orders"
           />
         )}

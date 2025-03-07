@@ -31,6 +31,7 @@ export default async function AdminProductsPage(props: {
     page,
     category,
   });
+  const { data, totalPages } = products;
 
   return (
     <div className="space-y-2">
@@ -54,7 +55,7 @@ export default async function AdminProductsPage(props: {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.data.map((product) => (
+            {data.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>{formatId(product.id)}</TableCell>
                 <TableCell>{product.name}</TableCell>
@@ -74,10 +75,10 @@ export default async function AdminProductsPage(props: {
             ))}
           </TableBody>
         </Table>
-        {products.totalPages > 1 && (
+        {totalPages > 1 && (
           <Pagination
             page={page}
-            totalPages={products.totalPages}
+            totalPages={totalPages}
             pathName="/admin/products"
           />
         )}

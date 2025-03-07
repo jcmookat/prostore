@@ -51,10 +51,11 @@ export async function getAllProducts({
   });
 
   const dataCount = await prisma.product.count();
+  const totalPages = Math.ceil(dataCount / limit);
 
   return {
     data,
-    totalPages: Math.ceil(dataCount / limit),
+    totalPages,
   };
 }
 
