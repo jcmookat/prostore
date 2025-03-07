@@ -8,13 +8,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Metadata } from 'next';
-import { getAllUsers } from '@/lib/actions/user.actions';
+import { deleteUser, getAllUsers } from '@/lib/actions/user.actions';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Pagination from '@/components/shared/pagination';
 import DeleteDialog from '@/components/shared/delete-dialog';
 import { formatId } from '@/lib/utils';
-import { deleteProduct } from '@/lib/actions/product.actions';
 import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
@@ -69,7 +68,7 @@ export default async function AdminUserPage(props: {
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/users/${user.id}`}>Edit</Link>
                   </Button>
-                  {/* <DeleteDialog id={user.id} action={deleteProduct} /> */}
+                  <DeleteDialog id={user.id} action={deleteUser} />
                 </TableCell>
               </TableRow>
             ))}
