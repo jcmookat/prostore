@@ -113,7 +113,7 @@ export const insertOrderItemSchema = z.object({
   qty: z.number(),
 });
 
-// Schema for
+// Schema for parment result
 export const paymentResultSchema = z.object({
   id: z.string(),
   status: z.string(),

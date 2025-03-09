@@ -9,9 +9,19 @@ import {
   insertOrderItemSchema,
   paymentResultSchema,
   updateProfileSchema,
+  updateUserSchema,
+  signInFormSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
+export type SignInFormFieldProps = {
+  name: FieldPath<z.infer<typeof signInFormSchema>>;
+  label: string;
+  placeholder: string;
+  description?: string;
+  inputType?: string;
+  formControl: Control<z.infer<typeof signInFormSchema>>;
+};
 export type SignupFormFieldProps = {
   name: FieldPath<z.infer<typeof signUpFormSchema>>;
   label: string;
@@ -86,4 +96,16 @@ export type ProductFormFieldProps = {
   disabled?: boolean;
   checked?: boolean;
   formControl: Control<z.infer<typeof insertProductSchema>>;
+};
+
+export type UpdateUserFormFieldProps = {
+  name: FieldPath<z.infer<typeof updateUserSchema>>;
+  label: string;
+  placeholder?: string;
+  description?: string;
+  inputType?: string;
+  disabled?: boolean;
+  checked?: boolean;
+  dataArr?: string[];
+  formControl: Control<z.infer<typeof updateUserSchema>>;
 };
