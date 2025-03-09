@@ -11,6 +11,7 @@ import { z } from 'zod';
 import UpdateUserFormField from './update-user-form-field';
 import SubmitButton from '@/components/shared/submit-button';
 import { USER_ROLES } from '@/lib/constants';
+import { updateUser } from '@/lib/actions/user.actions';
 
 export default function UpdateUserForm({
   user,
@@ -31,25 +32,30 @@ export default function UpdateUserForm({
     values,
   ) => {
     startTransition(async () => {
-      console.log(values);
-      // const res = await updateUser(values);
-      // if (!res.success) {
-      //   toast({
-      //     variant: 'destructive',
-      //     description: res.message,
-      //   });
-      //   return;
-      // }
-      // router.push('/');
+      try {
+        const res = await updateUser({ ...values, id: user.id });
+        if (!res.success) {
+          toast({
+            variant: 'destructive',
+            description: res.message,
+          });
+          return;
+        }
+
+        toast({
+          description: res.message,
+        });
+        form.reset(values);
+        router.push('/admin/users');
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        toast({ variant: 'destructive', description: 'Something went wrong!' });
+      }
     });
   };
   return (
     <Form {...form}>
-      <form
-        method="POST"
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="w-full">
           <UpdateUserFormField
             name="email"
