@@ -2,7 +2,7 @@ import { type ReactElement } from 'react';
 import { Metadata } from 'next';
 import { getProductById } from '@/lib/actions/product.actions';
 import { notFound } from 'next/navigation';
-import ProductForm from '@/components/shared/admin/product-form';
+import ProductForm from '@/components/admin/product-form';
 
 export const metadata: Metadata = {
   title: 'Update Product',

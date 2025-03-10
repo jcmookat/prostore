@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react';
 import { Metadata } from 'next';
-import ProductForm from '@/components/shared/admin/product-form';
+import ProductForm from '@/components/admin/product-form';
 
 export const metadata: Metadata = {
   title: 'Create Product',

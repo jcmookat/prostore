@@ -49,7 +49,10 @@ export default function UpdateUserForm({
         router.push('/admin/users');
       } catch (error) {
         console.error('Unexpected error:', error);
-        toast({ variant: 'destructive', description: 'Something went wrong!' });
+        toast({
+          variant: 'destructive',
+          description: (error as Error).message,
+        });
       }
     });
   };

@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signInFormSchema } from '@/lib/validators';
 import { z } from 'zod';
 import SignInFormField from './credentials-signin-form-field';
+import { useToast } from '@/hooks/use-toast';
 const CredentialsSignInForm = () => {
   const [data, action] = useActionState(signInWithCredentials, {
     success: false,
@@ -26,6 +27,7 @@ const CredentialsSignInForm = () => {
     defaultValues: signInDefaultValues,
   });
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   const onSubmit: SubmitHandler<z.infer<typeof signInFormSchema>> = async (
     values,
@@ -44,9 +46,13 @@ const CredentialsSignInForm = () => {
         if (callbackUrl) {
           formData.append('callbackUrl', callbackUrl);
         }
-        await action(formData);
+        action(formData);
       } catch (error) {
-        console.log('Error submitting form:', error);
+        console.error('Error submitting form:', error);
+        toast({
+          variant: 'destructive',
+          description: (error as Error).message,
+        });
       }
     });
   };

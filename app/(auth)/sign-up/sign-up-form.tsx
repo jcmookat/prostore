@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { signUpDefaultValues } from '@/lib/constants';
 import Link from 'next/link';
 import { useActionState, useTransition } from 'react';
@@ -12,8 +11,8 @@ import { signUpFormSchema } from '@/lib/validators';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
-import { Loader } from 'lucide-react';
 import SubmitButton from '@/components/shared/submit-button';
+import { useToast } from '@/hooks/use-toast';
 
 const SignUpForm = () => {
   const [data, action] = useActionState(signUpUser, {
@@ -29,6 +28,7 @@ const SignUpForm = () => {
     defaultValues: signUpDefaultValues,
   });
 
+  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const onSubmit: SubmitHandler<z.infer<typeof signUpFormSchema>> = async (
@@ -50,9 +50,13 @@ const SignUpForm = () => {
           formData.append('callbackUrl', callbackUrl);
         }
 
-        await action(formData);
+        action(formData);
       } catch (error) {
         console.error('Error submitting form:', error);
+        toast({
+          variant: 'destructive',
+          description: (error as Error).message,
+        });
       }
     });
   };
