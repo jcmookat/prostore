@@ -15,6 +15,7 @@ import Pagination from '@/components/shared/pagination';
 import DeleteDialog from '@/components/shared/delete-dialog';
 import { formatId } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { requireAdmin } from '@/lib/auth-guard';
 
 export const metadata: Metadata = {
   title: 'Users',
@@ -25,6 +26,7 @@ export default async function AdminUserPage(props: {
     page: string;
   }>;
 }): Promise<ReactElement> {
+  await requireAdmin();
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
 
@@ -35,10 +37,7 @@ export default async function AdminUserPage(props: {
   return (
     <div className="space-y-2">
       <div className="flex-between">
-        <h1 className="h2-bold">Products</h1>
-        <Button asChild variant="default">
-          <Link href="/admin/products/create">Create Product</Link>
-        </Button>
+        <h1 className="h2-bold">Users</h1>
       </div>
       <div>
         <Table>

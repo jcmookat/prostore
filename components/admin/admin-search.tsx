@@ -3,6 +3,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Input } from '../ui/input';
 import { useDebouncedCallback } from 'use-debounce';
+import { Search } from 'lucide-react';
 
 export default function AdminSearch(): ReactElement {
   const pathname = usePathname();
@@ -53,15 +54,18 @@ export default function AdminSearch(): ReactElement {
     updateSearchParams(newQuery);
   };
   return (
-    <>
+    <div className="relative">
       <Input
         type="search"
         placeholder="Search..."
         name="query"
         value={queryValue}
         onChange={handleSearch}
-        className="md:w-[100px] lg:w-[300px]"
+        className="md:w-[100px] lg:w-[300px] flex items-center pl-11"
       />
-    </>
+      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+        <Search className="text-gray-500" />
+      </div>
+    </div>
   );
 }

@@ -13,18 +13,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import DeleteDialog from '@/components/shared/delete-dialog';
+import { requireAdmin } from '@/lib/auth-guard';
 
 export default async function AdminProductsPage(props: {
-  searchParams: Promise<{
-    page: string;
-    query: string;
-    category: string;
+  searchParams?: Promise<{
+    page?: string;
+    query?: string;
+    category?: string;
   }>;
 }): Promise<ReactElement> {
+  await requireAdmin();
   const searchParams = await props.searchParams;
-  const page = Number(searchParams.page) || 1;
-  const searchText = searchParams.query || '';
-  const category = searchParams.category || '';
+  const page = Number(searchParams?.page) || 1;
+  const searchText = searchParams?.query || '';
+  const category = searchParams?.category || '';
 
   const products = await getAllProducts({
     query: searchText,
