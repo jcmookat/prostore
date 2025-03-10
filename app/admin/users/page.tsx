@@ -46,7 +46,7 @@ export default async function AdminUserPage(props: {
             {' '}
             Filtered by{' '}
             <i className="mr-4 font-bold">&quot;{searchText}&quot;</i>
-            <Link href={`/admin/orders`}>
+            <Link href={`/admin/users`}>
               <Button variant="outline" size="sm">
                 Remove Filter
               </Button>
@@ -88,13 +88,7 @@ export default async function AdminUserPage(props: {
             ))}
           </TableBody>
         </Table>
-        {totalPages > 1 && (
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            pathName="/admin/users"
-          />
-        )}
+        {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
       </div>
     </div>
   );

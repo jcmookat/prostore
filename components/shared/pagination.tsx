@@ -1,26 +1,25 @@
 'use client';
 import { type ReactElement } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '../ui/button';
 import { formUrlQuery } from '@/lib/utils';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type PaginationProps = {
   page: number | string;
   totalPages: number;
   urlParamName?: string;
-  pathName: string;
 };
 
 export default function Pagination({
   page,
   totalPages,
   urlParamName,
-  pathName,
 }: PaginationProps): ReactElement {
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  const pathName = usePathname();
   const onClick = (btnType: string) => {
     const pageValue = btnType === 'next' ? Number(page) + 1 : Number(page) - 1;
     const newUrl = formUrlQuery({
@@ -35,11 +34,11 @@ export default function Pagination({
     <div className="flex gap-2 justify-center mt-5">
       <Button
         variant="outline"
-        className="w-28"
+        className="w-10"
         disabled={Number(page) <= 1}
         onClick={() => onClick('prev')}
       >
-        Previous
+        <ChevronLeft />
       </Button>
       {[...new Array(totalPages)].map((_, index) => {
         const pageNumber = index + 1;
@@ -66,11 +65,11 @@ export default function Pagination({
       })}
       <Button
         variant="outline"
-        className="w-28"
+        className="w-10"
         disabled={Number(page) >= totalPages}
         onClick={() => onClick('next')}
       >
-        Next
+        <ChevronRight />
       </Button>
     </div>
   );

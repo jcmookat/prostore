@@ -90,13 +90,7 @@ export default async function AdminProductsPage(props: {
             ))}
           </TableBody>
         </Table>
-        {totalPages > 1 && (
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            pathName="/admin/products"
-          />
-        )}
+        {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
       </div>
     </div>
   );
