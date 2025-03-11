@@ -9,12 +9,6 @@ export default function AdminSearch(): ReactElement {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // const formActionUrl = pathname.includes('/admin/orders')
-  //   ? '/admin/orders'
-  //   : pathname.includes('/admin/users')
-  //     ? '/admin/users'
-  //     : '/admin/products';
-
   const searchParams = useSearchParams();
   const [queryValue, setQueryValue] = useState(searchParams.get('query') || '');
 
@@ -22,22 +16,6 @@ export default function AdminSearch(): ReactElement {
     setQueryValue(searchParams.get('query') || '');
   }, [searchParams]);
 
-  // const handleSearch = useDebouncedCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const newQuery = e.target.value;
-  //     setQueryValue(newQuery);
-  //
-  //     const params = new URLSearchParams(searchParams);
-  //     if (newQuery) {
-  //       params.set('query', newQuery);
-  //     } else {
-  //       params.delete('query');
-  //     }
-  //
-  //     replace(`${pathname}?${params.toString()}`);
-  //   },
-  //   300,
-  // );
   const updateSearchParams = useDebouncedCallback((query: string) => {
     const params = new URLSearchParams(searchParams);
     if (query) {
