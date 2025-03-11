@@ -17,39 +17,53 @@ const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
 
 	const handleAddToCart = async () => {
 		startTransition(async () => {
-			const res = await addItemToCart(item);
+			try {
+				const res = await addItemToCart(item);
 
-			if (!res.success) {
+				if (!res.success) {
+					toast({
+						variant: 'destructive',
+						description: res.message,
+					});
+					return;
+				}
+
+				// Handle success add to cart
+				toast({
+					description: res.message,
+					action: (
+						<ToastAction
+							className='bg-primary text-white hover:bg-gray-800'
+							altText='Go To cart'
+							onClick={() => router.push('/cart')}>
+							Go To Cart
+						</ToastAction>
+					),
+				});
+			} catch (error) {
+				console.error('Add to cart failed:', error);
 				toast({
 					variant: 'destructive',
-					description: res.message,
+					description: 'Something went wrong. Please try again later.',
 				});
-				return;
 			}
-
-			// Handle success add to cart
-			toast({
-				description: res.message,
-				action: (
-					<ToastAction
-						className='bg-primary text-white hover:bg-gray-800'
-						altText='Go To cart'
-						onClick={() => router.push('/cart')}>
-						Go To Cart
-					</ToastAction>
-				),
-			});
 		});
 	};
-
 	const handleRemoveFromCart = async () => {
 		startTransition(async () => {
-			const res = await removeItemFromCart(item.productId);
-
-			toast({
-				variant: res.success ? 'default' : 'destructive',
-				description: res.message,
-			});
+			try {
+				const res = await removeItemFromCart(item.productId);
+				toast({
+					variant: res.success ? 'default' : 'destructive',
+					description: res.message,
+				});
+			} catch (error) {
+				console.error('Remove from cart failed:', error);
+				toast({
+					variant: 'destructive',
+					description: 'Something went wrong. Please try again later.',
+				});
+			}
 		});
 	};
 

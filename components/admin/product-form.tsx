@@ -53,42 +53,50 @@ export default function ProductForm({
     values,
   ) => {
     startTransition(async () => {
-      // On create
-      if (type === 'Create') {
-        const res = await createProduct(values);
+      try {
+        // On create
+        if (type === 'Create') {
+          const res = await createProduct(values);
 
-        if (!res.success) {
-          toast({
-            variant: 'destructive',
-            description: res.message,
-          });
-        } else {
-          toast({
-            description: res.message,
-          });
-          router.push('/admin/products');
+          if (!res.success) {
+            toast({
+              variant: 'destructive',
+              description: res.message,
+            });
+          } else {
+            toast({
+              description: res.message,
+            });
+            router.push('/admin/products');
+          }
         }
-      }
 
-      // On update
-      if (type === 'Update') {
-        if (!productId) {
-          router.push('/admin/products');
-          return;
-        }
-        const res = await updateProduct({ ...values, id: productId });
+        // On update
+        if (type === 'Update') {
+          if (!productId) {
+            router.push('/admin/products');
+            return;
+          }
+          const res = await updateProduct({ ...values, id: productId });
 
-        if (!res.success) {
-          toast({
-            variant: 'destructive',
-            description: res.message,
-          });
-        } else {
-          toast({
-            description: res.message,
-          });
-          router.push('/admin/products');
+          if (!res.success) {
+            toast({
+              variant: 'destructive',
+              description: res.message,
+            });
+          } else {
+            toast({
+              description: res.message,
+            });
+            router.push('/admin/products');
+          }
         }
+      } catch (error) {
+        console.error('Something went wrong', error);
+        toast({
+          variant: 'destructive',
+          description: 'Something went wrong. Please try again later.',
+        });
       }
     });
   };
