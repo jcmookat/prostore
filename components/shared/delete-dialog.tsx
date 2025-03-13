@@ -28,24 +28,16 @@ export default function DeleteDialog({
 	// Handle delete order button click
 	const handleDeleteClick = () => {
 		startTransition(async () => {
-			try {
-				const res = await action(id);
-				if (!res.success) {
-					toast({
-						variant: 'destructive',
-						description: res.message,
-					});
-				} else {
-					setOpen(false);
-					toast({
-						description: res.message,
-					});
-				}
-			} catch (error) {
-				console.error('Failed to delete:', error);
+			const res = await action(id);
+			if (!res.success) {
 				toast({
 					variant: 'destructive',
-					description: 'Something went wrong. Please try again later.',
+					description: res.message,
+				});
+			} else {
+				setOpen(false);
+				toast({
+					description: res.message,
 				});
 			}
 		});

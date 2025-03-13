@@ -16,7 +16,7 @@ export default async function AdminProductUpdatePage(props: {
   await requireAdmin();
   const { id } = await props.params;
 
-  const product = await getProductById(id);
+  const { data: product } = await getProductById(id);
 
   if (!product) return notFound();
 

@@ -30,23 +30,15 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
 		values,
 	) => {
 		startTransition(async () => {
-			try {
-				const res = await updateUserAddress(values);
-				if (!res.success) {
-					toast({
-						variant: 'destructive',
-						description: res.message,
-					});
-					return;
-				}
-				router.push('/payment-method');
-			} catch (error) {
-				console.error('Update user address failed:', error);
+			const res = await updateUserAddress(values);
+			if (!res.success) {
 				toast({
 					variant: 'destructive',
-					description: 'Something went wrong. Please try again later.',
+					description: res.message,
 				});
+				return;
 			}
+			router.push('/payment-method');
 		});
 	};
 

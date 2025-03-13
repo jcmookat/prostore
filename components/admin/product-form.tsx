@@ -1,12 +1,12 @@
 'use client';
 
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { productDefaultValues } from '@/lib/constants';
@@ -27,271 +27,245 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 export default function ProductForm({
-  type,
-  product,
-  productId,
+	type,
+	product,
+	productId,
 }: {
-  type: 'Create' | 'Update';
-  product?: Product;
-  productId?: string;
+	type: 'Create' | 'Update';
+	product?: Product;
+	productId?: string;
 }): ReactElement {
-  const router = useRouter();
-  const { toast } = useToast();
+	const router = useRouter();
+	const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof insertProductSchema>>({
-    resolver:
-      type === 'Update'
-        ? zodResolver(updateProductSchema)
-        : zodResolver(insertProductSchema),
-    defaultValues:
-      product && type === 'Update' ? product : productDefaultValues,
-  });
+	const form = useForm<z.infer<typeof insertProductSchema>>({
+		resolver:
+			type === 'Update'
+				? zodResolver(updateProductSchema)
+				: zodResolver(insertProductSchema),
+		defaultValues:
+			product && type === 'Update' ? product : productDefaultValues,
+	});
 
-  const [isPending, startTransition] = useTransition();
+	const [isPending, startTransition] = useTransition();
 
-  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
-    values,
-  ) => {
-    startTransition(async () => {
-      try {
-        // On create
-        if (type === 'Create') {
-          const res = await createProduct(values);
+	const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
+		values,
+	) => {
+		const handleResponse = (res: { success: boolean; message: string }) => {
+			if (!res.success) {
+				toast({ variant: 'destructive', description: res.message });
+			} else {
+				toast({ description: res.message });
+				router.push('/admin/products');
+			}
+		};
+		startTransition(async () => {
+			if (type === 'Create') {
+				const res = await createProduct(values);
+				handleResponse(res);
+			}
 
-          if (!res.success) {
-            toast({
-              variant: 'destructive',
-              description: res.message,
-            });
-          } else {
-            toast({
-              description: res.message,
-            });
-            router.push('/admin/products');
-          }
-        }
+			if (type === 'Update') {
+				if (!productId) {
+					router.push('/admin/products');
+					return;
+				}
+				const res = await updateProduct({ ...values, id: productId });
+				handleResponse(res);
+			}
+		});
+	};
 
-        // On update
-        if (type === 'Update') {
-          if (!productId) {
-            router.push('/admin/products');
-            return;
-          }
-          const res = await updateProduct({ ...values, id: productId });
+	const images = form.watch('images');
+	const isFeatured = form.watch('isFeatured');
+	const banner = form.watch('banner');
 
-          if (!res.success) {
-            toast({
-              variant: 'destructive',
-              description: res.message,
-            });
-          } else {
-            toast({
-              description: res.message,
-            });
-            router.push('/admin/products');
-          }
-        }
-      } catch (error) {
-        console.error('Something went wrong', error);
-        toast({
-          variant: 'destructive',
-          description: 'Something went wrong. Please try again later.',
-        });
-      }
-    });
-  };
+	return (
+		<Form {...form}>
+			<form
+				method='post'
+				onSubmit={form.handleSubmit(onSubmit)}
+				className='space-y-8'>
+				<div className='flex flex-col gap-5 md:flex-row'>
+					{/* Name */}
+					<div className='w-full'>
+						<ProductFormField
+							name='name'
+							label='Name'
+							placeholder='Enter a product name'
+							formControl={form.control}
+						/>
+					</div>
+					{/* Slug */}
+					<div className='w-full'>
+						<ProductFormField
+							name='slug'
+							label='Slug'
+							placeholder='Enter slug'
+							formControl={form.control}
+						/>
+						<Button
+							type='button'
+							className='bg-gray-600 text-white px-4 py-1 mt-2 hover:bg-gray-700'
+							onClick={() =>
+								form.setValue(
+									'slug',
+									slugify(form.getValues('name'), { lower: true }),
+								)
+							}>
+							Generate Slug
+						</Button>
+					</div>
+				</div>
+				<div className='flex flex-col gap-5 md:flex-row'>
+					{/* Category */}
+					<ProductFormField
+						name='category'
+						label='Category'
+						placeholder='Enter category'
+						formControl={form.control}
+					/>
+					{/* Brand */}
+					<ProductFormField
+						name='brand'
+						label='Brand'
+						placeholder='Enter product brand'
+						formControl={form.control}
+					/>
+				</div>
+				<div className='flex flex-col gap-5 md:flex-row'>
+					{/* Price */}
+					<ProductFormField
+						name='price'
+						label='Price'
+						placeholder='Enter price'
+						formControl={form.control}
+					/>
+					{/* Stock */}
+					<ProductFormField
+						name='stock'
+						label='Stock'
+						inputType='number'
+						placeholder='Enter product stock'
+						formControl={form.control}
+					/>
+				</div>
+				<div className='upload-field flex flex-col gap-5 md:flex-row'>
+					{/* Images */}
+					<FormField
+						control={form.control}
+						name='images'
+						render={() => (
+							<FormItem className='w-full'>
+								<FormLabel>Images</FormLabel>
+								<Card>
+									<CardContent className='space-y-2 min-h-48 p-3'>
+										<div className='flex-center gap-3 w-full bg-gray-100 dark:bg-gray-700 mb-4 rounded-md'>
+											{images.map((image: string) => (
+												<Image
+													key={image}
+													src={image}
+													alt='product image'
+													className='w-20 h-20 object-cover m-3 object-center rounded-md mr-0 ml-0'
+													width={100}
+													height={100}
+												/>
+											))}
+										</div>
+										<FormControl>
+											<UploadDropzone
+												endpoint='imageUploader'
+												onClientUploadComplete={(res: { url: string }[]) => {
+													const newImageUrls = res.map((file) => file.url);
+													form.setValue('images', [...images, ...newImageUrls]);
+												}}
+												onUploadError={(error: Error) => {
+													toast({
+														variant: 'destructive',
+														description: `ERROR! ${error.message}`,
+													});
+												}}
+												appearance={{
+													container:
+														'w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
+													button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
+													allowedContent: 'text-gray-500 dark:text-white',
+													label:
+														'text-gray-500 dark:text-white text-[1.2rem] mb-2',
+												}}
+											/>
+										</FormControl>
+									</CardContent>
+								</Card>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
-  const images = form.watch('images');
-  const isFeatured = form.watch('isFeatured');
-  const banner = form.watch('banner');
+				<div className='upload-field'>
+					{/* Is Featured */}
+					<ProductFormField
+						name='isFeatured'
+						label='Featured Product'
+						inputType='checkbox'
+						formControl={form.control}
+					/>
 
-  return (
-    <Form {...form}>
-      <form
-        method="post"
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
-        <div className="flex flex-col gap-5 md:flex-row">
-          {/* Name */}
-          <div className="w-full">
-            <ProductFormField
-              name="name"
-              label="Name"
-              placeholder="Enter a product name"
-              formControl={form.control}
-            />
-          </div>
-          {/* Slug */}
-          <div className="w-full">
-            <ProductFormField
-              name="slug"
-              label="Slug"
-              placeholder="Enter slug"
-              formControl={form.control}
-            />
-            <Button
-              type="button"
-              className="bg-gray-600 text-white px-4 py-1 mt-2 hover:bg-gray-700"
-              onClick={() =>
-                form.setValue(
-                  'slug',
-                  slugify(form.getValues('name'), { lower: true }),
-                )
-              }
-            >
-              Generate Slug
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-5 md:flex-row">
-          {/* Category */}
-          <ProductFormField
-            name="category"
-            label="Category"
-            placeholder="Enter category"
-            formControl={form.control}
-          />
-          {/* Brand */}
-          <ProductFormField
-            name="brand"
-            label="Brand"
-            placeholder="Enter product brand"
-            formControl={form.control}
-          />
-        </div>
-        <div className="flex flex-col gap-5 md:flex-row">
-          {/* Price */}
-          <ProductFormField
-            name="price"
-            label="Price"
-            placeholder="Enter price"
-            formControl={form.control}
-          />
-          {/* Stock */}
-          <ProductFormField
-            name="stock"
-            label="Stock"
-            inputType="number"
-            placeholder="Enter product stock"
-            formControl={form.control}
-          />
-        </div>
-        <div className="upload-field flex flex-col gap-5 md:flex-row">
-          {/* Images */}
-          <FormField
-            control={form.control}
-            name="images"
-            render={() => (
-              <FormItem className="w-full">
-                <FormLabel>Images</FormLabel>
-                <Card>
-                  <CardContent className="space-y-2 min-h-48 p-3">
-                    <div className="flex-center gap-3 p-3 w-full bg-gray-100 dark:bg-gray-700 mb-4 rounded-md">
-                      {images.map((image: string) => (
-                        <Image
-                          key={image}
-                          src={image}
-                          alt="product image"
-                          className="w-20 h-20 object-cover object-center rounded-md mt-1"
-                          width={100}
-                          height={100}
-                        />
-                      ))}
-                    </div>
-                    <FormControl>
-                      <UploadDropzone
-                        endpoint="imageUploader"
-                        onClientUploadComplete={(res: { url: string }[]) => {
-                          const newImageUrls = res.map((file) => file.url);
-                          form.setValue('images', [...images, ...newImageUrls]);
-                        }}
-                        onUploadError={(error: Error) => {
-                          toast({
-                            variant: 'destructive',
-                            description: `ERROR! ${error.message}`,
-                          });
-                        }}
-                        appearance={{
-                          container:
-                            'w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
-                          button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
-                          allowedContent: 'text-gray-500 dark:text-white',
-                          label:
-                            'text-gray-500 dark:text-white text-[1.2rem] mb-2',
-                        }}
-                      />
-                    </FormControl>
-                  </CardContent>
-                </Card>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+					{isFeatured && banner && (
+						<div className='flex-center p-3 w-full bg-gray-100 mt-4 rounded-md dark:bg-gray-700'>
+							<Image
+								src={banner}
+								alt='banner image'
+								className='w-full object-cover object-center rounded-md'
+								width={1920}
+								height={680}
+							/>
+						</div>
+					)}
 
-        <div className="upload-field">
-          {/* Is Featured */}
-          <ProductFormField
-            name="isFeatured"
-            label="Featured Product"
-            inputType="checkbox"
-            formControl={form.control}
-          />
-
-          {isFeatured && banner && (
-            <div className="flex-center p-3 w-full bg-gray-100 mt-4 rounded-md dark:bg-gray-700">
-              <Image
-                src={banner}
-                alt="banner image"
-                className="w-full object-cover object-center rounded-md"
-                width={1920}
-                height={680}
-              />
-            </div>
-          )}
-
-          {isFeatured && (
-            <Card className="mt-4">
-              <CardContent className="space-y-2 min-h-48 p-3">
-                <UploadDropzone
-                  endpoint="bannerImageUploader"
-                  onClientUploadComplete={(res: { url: string }[]) => {
-                    form.setValue('banner', res[0]?.url);
-                  }}
-                  onUploadError={(error: Error) => {
-                    toast({
-                      variant: 'destructive',
-                      description: `ERROR! ${error.message}`,
-                    });
-                  }}
-                  appearance={{
-                    container:
-                      'mt-0 w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
-                    button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
-                    allowedContent: 'text-gray-500 dark:text-white',
-                    label: 'text-gray-500 dark:text-white text-[1.2rem] mb-2',
-                  }}
-                />
-              </CardContent>
-            </Card>
-          )}
-        </div>
-        <div>
-          {/* Description */}
-          <ProductFormField
-            name="description"
-            label="Description"
-            inputType="textarea"
-            placeholder="Enter product description"
-            formControl={form.control}
-          />
-        </div>
-        <div>
-          {/* Submit */}
-          <ProductButton isPending={isPending} formType={type} />
-        </div>
-      </form>
-    </Form>
-  );
+					{isFeatured && (
+						<Card className='mt-4'>
+							<CardContent className='space-y-2 min-h-48 p-3'>
+								<UploadDropzone
+									endpoint='bannerImageUploader'
+									onClientUploadComplete={(res: { url: string }[]) => {
+										form.setValue('banner', res[0]?.url);
+									}}
+									onUploadError={(error: Error) => {
+										toast({
+											variant: 'destructive',
+											description: `ERROR! ${error.message}`,
+										});
+									}}
+									appearance={{
+										container:
+											'mt-0 w-full flex-row rounded-md pt-5 pb-8 border-2 border-dashed dark:border-gray-700 border-gray-300 text-gray-500 dark:text-white',
+										button: 'bg-gray-600 hover:bg-gray-700 w-[150px]',
+										allowedContent: 'text-gray-500 dark:text-white',
+										label: 'text-gray-500 dark:text-white text-[1.2rem] mb-2',
+									}}
+								/>
+							</CardContent>
+						</Card>
+					)}
+				</div>
+				<div>
+					{/* Description */}
+					<ProductFormField
+						name='description'
+						label='Description'
+						inputType='textarea'
+						placeholder='Enter product description'
+						formControl={form.control}
+					/>
+				</div>
+				<div>
+					{/* Submit */}
+					<ProductButton isPending={isPending} formType={type} />
+				</div>
+			</form>
+		</Form>
+	);
 }

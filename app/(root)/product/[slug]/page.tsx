@@ -9,11 +9,12 @@ import { getMyCart } from '@/lib/actions/cart.actions';
 
 const ProductDetailsPage = async (props: {
 	params: Promise<{ slug: string }>; // params is the slug
-	//searchParams is something like this ?foo=bar&bar=foo
+	//searchParams is the query - something like this ?foo=bar&bar=foo
 }) => {
 	const { slug } = await props.params;
 
-	const product = await getProductBySlug(slug);
+	const { data: product } = await getProductBySlug(slug);
+
 	if (!product) notFound();
 
 	const cart = await getMyCart();

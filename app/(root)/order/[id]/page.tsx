@@ -16,7 +16,7 @@ const OrderDetailsPage = async (props: {
 }) => {
   // Get order ID
   const { id } = await props.params;
-  const order = await getOrderById(id);
+  const { data: order } = await getOrderById(id);
   if (!order) notFound();
 
   // Get session

@@ -14,86 +14,86 @@ import { USER_ROLES } from '@/lib/constants';
 import { updateUser } from '@/lib/actions/user.actions';
 
 export default function UpdateUserForm({
-  user,
+	user,
 }: {
-  user: z.infer<typeof updateUserSchema>;
+	user: z.infer<typeof updateUserSchema>;
 }): ReactElement {
-  const router = useRouter();
-  const { toast } = useToast();
+	const router = useRouter();
+	const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof updateUserSchema>>({
-    resolver: zodResolver(updateUserSchema),
-    defaultValues: user,
-  });
+	const form = useForm<z.infer<typeof updateUserSchema>>({
+		resolver: zodResolver(updateUserSchema),
+		defaultValues: user,
+	});
 
-  const [isPending, startTransition] = useTransition();
+	const [isPending, startTransition] = useTransition();
 
-  const onSubmit: SubmitHandler<z.infer<typeof updateUserSchema>> = async (
-    values,
-  ) => {
-    startTransition(async () => {
-      try {
-        const res = await updateUser({ ...values, id: user.id });
-        if (!res.success) {
-          toast({
-            variant: 'destructive',
-            description: res.message,
-          });
-          return;
-        }
+	const onSubmit: SubmitHandler<z.infer<typeof updateUserSchema>> = async (
+		values,
+	) => {
+		startTransition(async () => {
+			try {
+				const res = await updateUser({ ...values, id: user.id });
+				if (!res.success) {
+					toast({
+						variant: 'destructive',
+						description: res.message,
+					});
+					return;
+				}
 
-        toast({
-          description: res.message,
-        });
-        form.reset(values);
-        router.push('/admin/users');
-      } catch (error) {
-        console.error('Unexpected error:', error);
-        toast({
-          variant: 'destructive',
-          description: (error as Error).message,
-        });
-      }
-    });
-  };
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="w-full">
-          <UpdateUserFormField
-            name="email"
-            label="Email"
-            disabled={true}
-            placeholder="Enter email"
-            formControl={form.control}
-          />
-        </div>
-        <div className="w-full">
-          <UpdateUserFormField
-            name="name"
-            label="Name"
-            placeholder="Enter name"
-            formControl={form.control}
-          />
-        </div>
-        <div className="w-full">
-          <UpdateUserFormField
-            name="role"
-            label="Role"
-            placeholder="Enter role"
-            inputType="select"
-            dataArr={USER_ROLES}
-            formControl={form.control}
-          />
-        </div>
-        <div className="flex-between">
-          <SubmitButton
-            buttonLabel="Update User"
-            isPending={isPending}
-            isPendingLabel="Updating..."
-          />
-        </div>
-      </form>
-    </Form>
-  );
+				toast({
+					description: res.message,
+				});
+				form.reset(values);
+				router.push('/admin/users');
+			} catch (error) {
+				console.error('Unexpected error:', error);
+				toast({
+					variant: 'destructive',
+					description: (error as Error).message,
+				});
+			}
+		});
+	};
+	return (
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+				<div className='w-full'>
+					<UpdateUserFormField
+						name='email'
+						label='Email'
+						disabled={true}
+						placeholder='Enter email'
+						formControl={form.control}
+					/>
+				</div>
+				<div className='w-full'>
+					<UpdateUserFormField
+						name='name'
+						label='Name'
+						placeholder='Enter name'
+						formControl={form.control}
+					/>
+				</div>
+				<div className='w-full'>
+					<UpdateUserFormField
+						name='role'
+						label='Role'
+						placeholder='Enter role'
+						inputType='select'
+						dataArr={USER_ROLES}
+						formControl={form.control}
+					/>
+				</div>
+				<div className='flex-between'>
+					<SubmitButton
+						buttonLabel='Update User'
+						isPending={isPending}
+						isPendingLabel='Updating...'
+					/>
+				</div>
+			</form>
+		</Form>
+	);
 }

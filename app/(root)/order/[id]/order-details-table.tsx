@@ -96,19 +96,11 @@ const OrderDetailsTable = ({
 				disabled={isPending}
 				onClick={() =>
 					startTransition(async () => {
-						try {
-							const res = await updateOrderToPaidByCOD(order.id);
-							toast({
-								variant: res.success ? 'default' : 'destructive',
-								description: res.message,
-							});
-						} catch (error) {
-							console.error('Update order to paid COD failed:', error);
-							toast({
-								variant: 'destructive',
-								description: 'Something went wrong. Please try again later.',
-							});
-						}
+						const res = await updateOrderToPaidByCOD(order.id);
+						toast({
+							variant: res.success ? 'default' : 'destructive',
+							description: res.message,
+						});
 					})
 				}>
 				{isPending ? 'processing...' : 'Mark As Paid'}

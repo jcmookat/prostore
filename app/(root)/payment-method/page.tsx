@@ -5,22 +5,21 @@ import PaymentMethodForm from './payment-method-form';
 import CheckoutSteps from '@/components/shared/checkout-steps';
 
 export const metadata: Metadata = {
-	title: 'Select Payment Method',
+  title: 'Select Payment Method',
 };
 
 const PaymentMethodPage = async () => {
-	const session = await auth();
-	const userId = session?.user?.id;
+  const session = await auth();
+  const userId = session?.user?.id;
 
-	if (!userId) throw new Error('No User ID');
+  if (!userId) throw new Error('No User ID');
 
-	const user = await getUserById(userId);
-
-	return (
-		<>
-			<CheckoutSteps current={2} />
-			<PaymentMethodForm prefferedPaymentMethod={user.paymentMethod} />
-		</>
-	);
+  const user = await getUserById(userId);
+  return (
+    <>
+      <CheckoutSteps current={2} />
+      <PaymentMethodForm prefferedPaymentMethod={user.paymentMethod} />
+    </>
+  );
 };
 export default PaymentMethodPage;

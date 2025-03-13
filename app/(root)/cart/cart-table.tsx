@@ -65,22 +65,13 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
 												type='button'
 												onClick={() =>
 													startTransition(async () => {
-														try {
-															const res = await removeItemFromCart(
-																item.productId,
-															);
-															if (!res.success) {
-																toast({
-																	variant: 'destructive',
-																	description: res.message,
-																});
-															}
-														} catch (error) {
-															console.error('Remove from cart failed:', error);
+														const res = await removeItemFromCart(
+															item.productId,
+														);
+														if (!res.success) {
 															toast({
 																variant: 'destructive',
-																description:
-																	'Something went wrong. Please try again later.',
+																description: res.message,
 															});
 														}
 													})
@@ -98,20 +89,11 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
 												type='button'
 												onClick={() =>
 													startTransition(async () => {
-														try {
-															const res = await addItemToCart(item);
-															if (!res.success) {
-																toast({
-																	variant: 'destructive',
-																	description: res.message,
-																});
-															}
-														} catch (error) {
-															console.error('Add to cart failed:', error);
+														const res = await addItemToCart(item);
+														if (!res.success) {
 															toast({
 																variant: 'destructive',
-																description:
-																	'Something went wrong. Please try again later.',
+																description: res.message,
 															});
 														}
 													})

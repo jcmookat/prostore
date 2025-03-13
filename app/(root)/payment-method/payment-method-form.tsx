@@ -43,24 +43,16 @@ const PaymentMethodForm = ({
 		values,
 	) => {
 		startTransition(async () => {
-			try {
-				// Update user's payment method in database
-				const res = await updateUserPaymentMethod(values);
-				if (!res.success) {
-					toast({
-						variant: 'destructive',
-						description: res.message,
-					});
-					return;
-				}
-				router.push('/place-order');
-			} catch (error) {
-				console.error('Update user payment method failed:', error);
+			// Update user's payment method in database
+			const res = await updateUserPaymentMethod(values);
+			if (!res.success) {
 				toast({
 					variant: 'destructive',
-					description: 'Something went wrong. Please try again later.',
+					description: res.message,
 				});
+				return;
 			}
+			router.push('/place-order');
 		});
 	};
 

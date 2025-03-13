@@ -33,37 +33,29 @@ export default function ProfileForm(): ReactElement {
 		values,
 	) => {
 		startTransition(async () => {
-			try {
-				const res = await updateProfile(values);
-				if (!res.success) {
-					toast({
-						variant: 'destructive',
-						description: res.message,
-					});
-					return;
-				}
-
-				const newSession = {
-					...session,
-					user: {
-						...session?.user,
-						name: values.name,
-					},
-				};
-				await update(newSession);
-
-				router.refresh();
-
-				toast({
-					description: res.message,
-				});
-			} catch (error) {
-				console.error('Update profile failed:', error);
+			const res = await updateProfile(values);
+			if (!res.success) {
 				toast({
 					variant: 'destructive',
-					description: 'Something went wrong. Please try again later.',
+					description: res.message,
 				});
+				return;
 			}
+
+			const newSession = {
+				...session,
+				user: {
+					...session?.user,
+					name: values.name,
+				},
+			};
+			await update(newSession);
+
+			router.refresh();
+
+			toast({
+				description: res.message,
+			});
 		});
 	};
 
