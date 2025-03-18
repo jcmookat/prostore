@@ -4,17 +4,18 @@ import {
 	getFeaturedProducts,
 } from '@/lib/actions/product.actions';
 import ProductCarousel from '@/components/shared/product/product-carousel';
+import ViewAllProductsButton from '@/components/view-all-products';
 
 const Homepage = async () => {
-	// async - we can do this because it is a server component
-	const { data: latestProducts } = await getLatestProducts();
-	const { data: featuredProducts } = await getFeaturedProducts();
+	const latestProducts = await getLatestProducts();
+	const featuredProducts = await getFeaturedProducts();
 	return (
 		<>
 			{featuredProducts.length > 0 && (
 				<ProductCarousel data={featuredProducts} />
 			)}
 			<ProductList data={latestProducts} title='Newest Arrivals' limit={4} />
+			<ViewAllProductsButton />
 		</>
 	);
 };

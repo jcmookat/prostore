@@ -22,8 +22,8 @@ export default function ProfileForm(): ReactElement {
 	const form = useForm<z.infer<typeof updateProfileSchema>>({
 		resolver: zodResolver(updateProfileSchema),
 		defaultValues: {
-			name: session?.user?.name ?? '', // if session name doesn't exist, use ''
-			email: session?.user?.email ?? '', // if session email doesn't exist, use ''
+			name: session?.user?.name ?? '',
+			email: session?.user?.email ?? '',
 		},
 	});
 

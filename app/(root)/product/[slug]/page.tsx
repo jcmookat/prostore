@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { getProductBySlug } from '@/lib/actions/product.actions';
-import { notFound } from 'next/navigation';
 import ProductPrice from '@/components/shared/product/product-price';
 import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
@@ -12,12 +11,9 @@ const ProductDetailsPage = async (props: {
 	//searchParams is the query - something like this ?foo=bar&bar=foo
 }) => {
 	const { slug } = await props.params;
-
-	const { data: product } = await getProductBySlug(slug);
-
-	if (!product) notFound();
-
+	const product = await getProductBySlug(slug);
 	const cart = await getMyCart();
+
 	return (
 		<>
 			<section>

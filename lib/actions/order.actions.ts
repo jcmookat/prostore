@@ -107,10 +107,9 @@ export async function createOrder() {
 
 // Get order by id
 export async function getOrderById(orderId: string) {
-	const data = await prisma.order.findFirst({
+	const order = await prisma.order.findFirst({
 		where: { id: orderId },
 		include: {
-			// when we get the order, we want to include the items
 			orderItems: true,
 			user: {
 				select: {
@@ -120,11 +119,8 @@ export async function getOrderById(orderId: string) {
 			},
 		},
 	});
-	return {
-		data: convertToPlainObject(data),
-		success: true,
-		message: 'Successfull fetched order by ID.',
-	};
+	if (!order) throw new Error('Order not found');
+	return convertToPlainObject(order);
 }
 
 // Create new paypal order
@@ -331,8 +327,6 @@ export async function getMyOrders({
 	return {
 		data,
 		totalPages,
-		success: true,
-		message: 'Successfully fetched orders.',
 	};
 }
 
@@ -414,8 +408,6 @@ export async function getAllOrders({
 	return {
 		data,
 		totalPages,
-		success: true,
-		message: 'Successfully fetced all orders.',
 	};
 }
 
