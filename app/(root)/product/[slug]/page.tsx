@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { getProductBySlug } from '@/lib/actions/product.actions';
@@ -8,12 +7,13 @@ import AddToCart from '@/components/shared/product/add-to-cart';
 import { getMyCart } from '@/lib/actions/cart.actions';
 
 // Function to dynamically generate metadata
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+export async function generateMetadata(props: {
+  params: Promise<{
+    slug: string;
+  }>;
+}) {
+  const { slug } = await props.params;
+  const product = await getProductBySlug(slug);
 
   return {
     title: product ? `${product.name} | Prostore` : 'Product Not Found',
