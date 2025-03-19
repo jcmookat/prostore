@@ -18,7 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { requireAdmin } from '@/lib/auth-guard';
 
 export const metadata: Metadata = {
-  title: 'Users',
+  title: 'Admin - Users',
 };
 
 export default async function AdminUserPage(props: {

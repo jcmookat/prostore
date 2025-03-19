@@ -9,214 +9,221 @@ import { Prisma } from '@prisma/client';
 
 // Get latest products
 export async function getLatestProducts() {
-	const products = await prisma.product.findMany({
-		take: LATEST_PRODUCTS_LIMIT,
-		orderBy: { createdAt: 'desc' },
-	});
+  const products = await prisma.product.findMany({
+    take: LATEST_PRODUCTS_LIMIT,
+    orderBy: { createdAt: 'desc' },
+  });
 
-	if (!products || products.length === 0) {
-		throw new Error('No products found');
-	}
-	return convertToPlainObject(products);
+  if (!products || products.length === 0) {
+    throw new Error('No products found');
+  }
+  return convertToPlainObject(products);
 }
 
 // Get single product by its slug
 export async function getProductBySlug(slug: string) {
-	const product = await prisma.product.findFirst({
-		where: { slug: slug },
-	});
-	if (!product) throw new Error('Product not found');
-	return convertToPlainObject(product);
+  const product = await prisma.product.findFirst({
+    where: { slug: slug },
+  });
+  if (!product) throw new Error('Product not found');
+  return convertToPlainObject(product);
 }
 
 // Get single product by id
 export async function getProductById(productId: string) {
-	const product = await prisma.product.findFirst({
-		where: { id: productId },
-	});
-	if (!product) throw new Error('Product not found');
-	return convertToPlainObject(product);
+  const product = await prisma.product.findFirst({
+    where: { id: productId },
+  });
+  if (!product) throw new Error('Product not found');
+  return convertToPlainObject(product);
 }
 
 // Get all products
 export async function getAllProducts({
-	query,
-	limit = PAGE_SIZE,
-	page,
-	category,
-	price,
-	rating,
-	sort,
+  query,
+  limit = PAGE_SIZE,
+  page,
+  category,
+  price,
+  rating,
+  sort,
 }: {
-	query: string;
-	limit?: number;
-	page: number;
-	category?: string;
-	price?: string;
-	rating?: string;
-	sort?: string;
+  query: string;
+  limit?: number;
+  page: number;
+  category?: string;
+  price?: string;
+  rating?: string;
+  sort?: string;
 }) {
-	try {
-		// Query filter
-		const queryFilter: Prisma.ProductWhereInput =
-			query && query !== 'all'
-				? {
-						name: {
-							contains: query,
-							mode: 'insensitive',
-						} as Prisma.StringFilter,
-				  }
-				: {};
+  try {
+    // Query filter
+    const queryFilter: Prisma.ProductWhereInput =
+      query && query !== 'all'
+        ? {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            } as Prisma.StringFilter,
+          }
+        : {};
 
-		// Category filter
-		const categoryFilter =
-			category && category !== 'all' ? { category: category } : {};
+    // Category filter
+    const categoryFilter =
+      category && category !== 'all' ? { category: category } : {};
 
-		// Price filter
-		const priceFilter: Prisma.ProductWhereInput =
-			price && price !== 'all'
-				? {
-						price: {
-							gte: Number(price.split('-')[0]),
-							lte: Number(price.split('-')[1]),
-						},
-				  }
-				: {};
+    // Price filter
+    const priceFilter: Prisma.ProductWhereInput =
+      price && price !== 'all'
+        ? {
+            price: {
+              gte: Number(price.split('-')[0]),
+              lte: Number(price.split('-')[1]),
+            },
+          }
+        : {};
 
-		// Rating filter
-		const ratingFilter =
-			rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
+    // Rating filter
+    const ratingFilter =
+      rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
 
-		// Fetch products
-		const data = await prisma.product.findMany({
-			where: {
-				...queryFilter,
-				...categoryFilter,
-				...priceFilter,
-				...ratingFilter,
-			},
-			orderBy: { createdAt: 'desc' },
-			skip: (page - 1) * limit,
-			take: limit,
-		});
+    // Fetch products
+    const data = await prisma.product.findMany({
+      where: {
+        ...queryFilter,
+        ...categoryFilter,
+        ...priceFilter,
+        ...ratingFilter,
+      },
+      orderBy:
+        sort === 'lowest'
+          ? { price: 'asc' }
+          : sort === 'highest'
+            ? { price: 'desc' }
+            : sort === 'rating'
+              ? { rating: 'desc' }
+              : { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-		const dataCount = await prisma.product.count();
-		const totalPages = Math.ceil(dataCount / limit);
+    const dataCount = await prisma.product.count();
+    const totalPages = Math.ceil(dataCount / limit);
 
-		return {
-			data: convertToPlainObject(data),
-			totalPages,
-			success: true,
-			message: 'Successfully fetched all products.',
-		};
-	} catch (error) {
-		console.error('Error on fetching products.', error);
-		throw new Error('Failed to fetch products. Try again later.');
-	}
+    return {
+      data: convertToPlainObject(data),
+      totalPages,
+      success: true,
+      message: 'Successfully fetched all products.',
+    };
+  } catch (error) {
+    console.error('Error on fetching products.', error);
+    throw new Error('Failed to fetch products.');
+  }
 }
 
 // Get product categories
 export async function getAllCategories() {
-	const categories = await prisma.product.groupBy({
-		by: ['category'],
-		_count: true,
-	});
+  const categories = await prisma.product.groupBy({
+    by: ['category'],
+    _count: true,
+  });
 
-	if (!categories || categories.length === 0) {
-		throw new Error('No categories found');
-	}
+  if (!categories || categories.length === 0) {
+    throw new Error('No categories found');
+  }
 
-	return convertToPlainObject(categories);
+  return convertToPlainObject(categories);
 }
 
 // Delete a product
 export async function deleteProduct(id: string) {
-	try {
-		const productExists = await prisma.product.findFirst({
-			where: { id },
-		});
+  try {
+    const productExists = await prisma.product.findFirst({
+      where: { id },
+    });
 
-		if (!productExists) throw new Error('Product not found');
+    if (!productExists) throw new Error('Product not found');
 
-		await prisma.product.delete({ where: { id } });
+    await prisma.product.delete({ where: { id } });
 
-		revalidatePath('/admin/products');
+    revalidatePath('/admin/products');
 
-		return {
-			success: true,
-			message: 'Product deleted successfully',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			message: formatError(error),
-		};
-	}
+    return {
+      success: true,
+      message: 'Product deleted successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
+  }
 }
 
 // Create Product
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
-	try {
-		// Validate and create product
-		const product = insertProductSchema.parse(data);
-		await prisma.product.create({ data: product });
+  try {
+    // Validate and create product
+    const product = insertProductSchema.parse(data);
+    await prisma.product.create({ data: product });
 
-		revalidatePath('/admin/products');
+    revalidatePath('/admin/products');
 
-		return {
-			success: true,
-			message: 'Product created successfully',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			message: formatError(error),
-		};
-	}
+    return {
+      success: true,
+      message: 'Product created successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
+  }
 }
 
 // Update Product
 export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
-	try {
-		// Validate and find product
-		const product = updateProductSchema.parse(data);
-		const productExists = await prisma.product.findFirst({
-			where: { id: product.id },
-		});
+  try {
+    // Validate and find product
+    const product = updateProductSchema.parse(data);
+    const productExists = await prisma.product.findFirst({
+      where: { id: product.id },
+    });
 
-		if (!productExists) throw new Error('Product not found');
+    if (!productExists) throw new Error('Product not found');
 
-		// Update product
-		await prisma.product.update({
-			where: { id: product.id },
-			data: product,
-		});
+    // Update product
+    await prisma.product.update({
+      where: { id: product.id },
+      data: product,
+    });
 
-		revalidatePath('/admin/products');
+    revalidatePath('/admin/products');
 
-		return {
-			success: true,
-			message: 'Product updated successfully',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			message: formatError(error),
-		};
-	}
+    return {
+      success: true,
+      message: 'Product updated successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
+  }
 }
 
 // Get featured products
 export async function getFeaturedProducts() {
-	const products = await prisma.product.findMany({
-		where: { isFeatured: true },
-		orderBy: { createdAt: 'desc' },
-		take: 4,
-	});
+  const products = await prisma.product.findMany({
+    where: { isFeatured: true },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  });
 
-	if (!products || products.length === 0) {
-		throw new Error('No featured products found');
-	}
+  if (!products || products.length === 0) {
+    throw new Error('No featured products found');
+  }
 
-	return convertToPlainObject(products);
+  return convertToPlainObject(products);
 }

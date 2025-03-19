@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/shared/delete-dialog';
 
 export const metadata: Metadata = {
-  title: 'Admin Orders',
+  title: 'Admin - Orders',
 };
 export default async function AdminOrdersPage(props: {
   searchParams?: Promise<{

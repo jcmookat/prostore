@@ -17,7 +17,7 @@ import Charts from './charts';
 import { requireAdmin } from '@/lib/auth-guard';
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard',
+  title: 'Admin - Dashboard',
 };
 export default async function AdminDashboardPage(): Promise<ReactElement> {
   await requireAdmin();
