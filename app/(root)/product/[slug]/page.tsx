@@ -22,7 +22,7 @@ export async function generateMetadata(props: {
       : 'This product is not available.',
   };
 }
-console.log('testing lazygit main');
+console.log('testing lazygit dev');
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>; // params is the slug
   //searchParams is the query - something like this ?foo=bar&bar=foo
