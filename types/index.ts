@@ -11,6 +11,7 @@ import {
   updateProfileSchema,
   updateUserSchema,
   signInFormSchema,
+  insertReviewSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
@@ -108,4 +109,10 @@ export type UpdateUserFormFieldProps = {
   checked?: boolean;
   dataArr?: string[];
   formControl: Control<z.infer<typeof updateUserSchema>>;
+};
+
+export type Review = z.infer<typeof insertReviewSchema> & {
+  id: string;
+  createdAt: Date;
+  user?: { name: string };
 };
