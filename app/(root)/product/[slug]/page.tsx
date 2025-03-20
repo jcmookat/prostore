@@ -5,6 +5,8 @@ import ProductPrice from '@/components/shared/product/product-price';
 import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import { getMyCart } from '@/lib/actions/cart.actions';
+import { auth } from '@/auth';
+import ReviewList from './review-list';
 
 // Function to dynamically generate metadata
 export async function generateMetadata(props: {
@@ -14,7 +16,6 @@ export async function generateMetadata(props: {
 }) {
   const { slug } = await props.params;
   const product = await getProductBySlug(slug);
-
   return {
     title: product ? `${product.name} | Prostore` : 'Product Not Found',
     description: product
@@ -22,7 +23,6 @@ export async function generateMetadata(props: {
       : 'This product is not available.',
   };
 }
-console.log('testing lazygit dev');
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>; // params is the slug
   //searchParams is the query - something like this ?foo=bar&bar=foo
@@ -31,9 +31,12 @@ const ProductDetailsPage = async (props: {
   const product = await getProductBySlug(slug);
   const cart = await getMyCart();
 
+  const session = await auth();
+  const userId = session?.user?.id;
+
   return (
     <>
-      <section>
+      <section className="mb-10">
         <div className="grid grid-cols-1 md:grid-cols-5">
           {/* Images Column */}
           <div className="col-span-2">
@@ -98,6 +101,14 @@ const ProductDetailsPage = async (props: {
             </Card>
           </div>
         </div>
+      </section>
+      <section>
+        <h2 className="h2-bold">Customer Reviews</h2>
+        <ReviewList
+          productId={product.id}
+          productSlug={product.slug}
+          userId={userId || ''}
+        />
       </section>
     </>
   );
