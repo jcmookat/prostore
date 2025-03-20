@@ -7,10 +7,12 @@ const SubmitButton = ({
   buttonLabel = 'Submit',
   isPending = false,
   isPendingLabel = 'Submitting',
+  withIcon = true,
 }: {
   buttonLabel?: string;
   isPending: boolean;
   isPendingLabel?: string;
+  withIcon?: boolean;
 }) => {
   return (
     <Button
@@ -25,7 +27,7 @@ const SubmitButton = ({
         </>
       ) : (
         <>
-          <ArrowRight className="w-4 h-4" /> {buttonLabel}
+          {withIcon && <ArrowRight className="w-4 h-4" />} {buttonLabel}
         </>
       )}
     </Button>

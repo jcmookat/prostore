@@ -116,3 +116,15 @@ export type Review = z.infer<typeof insertReviewSchema> & {
   createdAt: Date;
   user?: { name: string };
 };
+
+export type ReviewFormFieldProps = {
+  name: FieldPath<z.infer<typeof insertReviewSchema>>;
+  label: string;
+  placeholder?: string;
+  description?: string;
+  inputType?: string;
+  disabled?: boolean;
+  checked?: boolean;
+  dataArr?: string[];
+  formControl: Control<z.infer<typeof insertReviewSchema>>;
+};

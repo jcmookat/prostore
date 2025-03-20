@@ -56,3 +56,7 @@ export const reviewFormDefaultValues = {
   comment: '',
   rating: 0,
 };
+
+export const REVIEW_RATINGS = process.env.REVIEW_RATINGS
+  ? process.env.REVIEW_RATINGS.split(', ')
+  : ['1', '2', '3', '4', '5'];

@@ -12,6 +12,7 @@ import {
 import { Calendar, Check, User } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import ReviewForm from './review-form';
 
 export default function ReviewList({
   userId,
@@ -23,11 +24,12 @@ export default function ReviewList({
   productSlug: string;
 }): ReactElement {
   const [reviews, setReviews] = useState<Review[]>([]);
+
   return (
     <div className="space-y-4">
       {reviews.length === 0 && <div>No reviews yet</div>}
       {userId ? (
-        <div>review form</div>
+        <ReviewForm userId={userId} productId={productId} />
       ) : (
         <div>
           Please{' '}
