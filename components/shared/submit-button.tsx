@@ -27,7 +27,8 @@ const SubmitButton = ({
         </>
       ) : (
         <>
-          {withIcon && <ArrowRight className="w-4 h-4" />} {buttonLabel}
+          {withIcon && <ArrowRight className="w-4 h-4" />}
+          {buttonLabel}
         </>
       )}
     </Button>

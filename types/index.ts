@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodType } from 'zod';
 import {
   insertProductSchema,
   insertCartSchema,
@@ -12,25 +12,48 @@ import {
   updateUserSchema,
   signInFormSchema,
   insertReviewSchema,
+  paymentMethodSchema,
 } from '@/lib/validators';
 import { FieldPath, Control } from 'react-hook-form';
 
-export type SignInFormFieldProps = {
-  name: FieldPath<z.infer<typeof signInFormSchema>>;
+// Base type for form field props
+export type BaseFormFieldProps<TSchema extends ZodType> = {
+  name: FieldPath<z.infer<TSchema>>;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   description?: string;
   inputType?: string;
-  formControl: Control<z.infer<typeof signInFormSchema>>;
+  disabled?: boolean;
+  dataArr?: string[];
+  selectIcon?: boolean;
+  disabledLabel?: string;
+  enabledLabel?: string;
+  formControl: Control<z.infer<TSchema>>;
 };
-export type SignupFormFieldProps = {
-  name: FieldPath<z.infer<typeof signUpFormSchema>>;
-  label: string;
-  placeholder: string;
-  description?: string;
-  inputType?: string;
-  formControl: Control<z.infer<typeof signUpFormSchema>>;
-};
+
+export type SignInFormFieldProps = BaseFormFieldProps<typeof signInFormSchema>;
+export type SignupFormFieldProps = BaseFormFieldProps<typeof signUpFormSchema>;
+export type ShippingAddressFormFieldProps = BaseFormFieldProps<
+  typeof shippingAddressSchema
+>;
+export type PaymentMethodFormFieldProps = BaseFormFieldProps<
+  typeof paymentMethodSchema
+>;
+export type ProductFormFieldProps = BaseFormFieldProps<
+  typeof insertProductSchema
+>;
+
+export type UpdateUserFormFieldProps = BaseFormFieldProps<
+  typeof updateUserSchema
+>;
+
+export type ProfileFormFieldsProps = BaseFormFieldProps<
+  typeof updateProfileSchema
+>;
+
+export type ReviewFormFieldProps = BaseFormFieldProps<
+  typeof insertReviewSchema
+>;
 
 export type Product = z.infer<typeof insertProductSchema> & {
   id: string; // not inserted but created automatically in the DB
@@ -41,23 +64,8 @@ export type Cart = z.infer<typeof insertCartSchema>;
 export type CartItem = z.infer<typeof cartItemSchema>;
 
 export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
-export type ShippingAddressFormFieldProps = {
-  name: FieldPath<z.infer<typeof shippingAddressSchema>>;
-  label: string;
-  placeholder?: string;
-  description?: string;
-  inputType?: string;
-  formControl: Control<z.infer<typeof shippingAddressSchema>>;
-};
 
-export type PaymentMethod = {
-  type: string | null;
-};
-export type PaymentMethodFormFieldProps = {
-  label: string;
-  value: string;
-  checked?: boolean;
-};
+export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
 
 export type Order = z.infer<typeof insertOrderSchema> & {
   id: string;
@@ -73,58 +81,13 @@ export type OrderItem = z.infer<typeof insertOrderItemSchema>;
 
 export type PaymentResult = z.infer<typeof paymentResultSchema>;
 
-export type ProfileFormFieldsProps = {
-  name: FieldPath<z.infer<typeof updateProfileSchema>>;
-  label: string;
-  placeholder?: string;
-  description?: string;
-  inputType?: string;
-  disabled?: boolean;
-  formControl: Control<z.infer<typeof updateProfileSchema>>;
-};
-
 export type SalesDataType = {
   month: string;
   totalSales: number;
 }[];
 
-export type ProductFormFieldProps = {
-  name: FieldPath<z.infer<typeof insertProductSchema>>;
-  label: string;
-  placeholder?: string;
-  description?: string;
-  inputType?: string;
-  disabled?: boolean;
-  checked?: boolean;
-  formControl: Control<z.infer<typeof insertProductSchema>>;
-};
-
-export type UpdateUserFormFieldProps = {
-  name: FieldPath<z.infer<typeof updateUserSchema>>;
-  label: string;
-  placeholder?: string;
-  description?: string;
-  inputType?: string;
-  disabled?: boolean;
-  checked?: boolean;
-  dataArr?: string[];
-  formControl: Control<z.infer<typeof updateUserSchema>>;
-};
-
 export type Review = z.infer<typeof insertReviewSchema> & {
   id: string;
   createdAt: Date;
   user?: { name: string };
-};
-
-export type ReviewFormFieldProps = {
-  name: FieldPath<z.infer<typeof insertReviewSchema>>;
-  label: string;
-  placeholder?: string;
-  description?: string;
-  inputType?: string;
-  disabled?: boolean;
-  checked?: boolean;
-  dataArr?: string[];
-  formControl: Control<z.infer<typeof insertReviewSchema>>;
 };

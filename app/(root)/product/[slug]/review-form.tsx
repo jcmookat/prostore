@@ -15,10 +15,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
-import ReviewFormField from './review-form-field';
 import { Form } from '@/components/ui/form';
 import { REVIEW_RATINGS } from '@/lib/constants';
 import SubmitButton from '@/components/shared/submit-button';
+import BaseFormField from '@/components/shared/base-form-field';
 
 export default function ReviewForm({
   userId,
@@ -58,26 +58,27 @@ export default function ReviewForm({
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <ReviewFormField
+              <BaseFormField<typeof insertReviewSchema>
                 name="title"
                 label="Title"
                 placeholder="Enter title"
                 formControl={form.control}
               />
-              <ReviewFormField
+              <BaseFormField<typeof insertReviewSchema>
                 name="description"
                 label="Description"
                 placeholder="Enter description"
                 inputType="textarea"
                 formControl={form.control}
               />
-              <ReviewFormField
+              <BaseFormField<typeof insertReviewSchema>
                 name="rating"
                 label="Rating"
                 placeholder="Select a rating"
                 inputType="select"
                 dataArr={REVIEW_RATINGS}
                 formControl={form.control}
+                selectIcon={true}
               />
             </div>
             <DialogFooter>
@@ -85,7 +86,7 @@ export default function ReviewForm({
                 buttonLabel="Submit"
                 isPendingLabel="Submitting..."
                 isPending={form.formState.isSubmitting}
-                withIcon={false}
+                withIcon={true}
               />
             </DialogFooter>
           </form>
