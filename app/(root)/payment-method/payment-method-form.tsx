@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { useTransition } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { paymentMethodSchema } from '@/lib/validators';
 import { PaymentMethod } from '@/types';
@@ -30,23 +29,19 @@ const PaymentMethodForm = ({
     },
   });
 
-  const [isPending, startTransition] = useTransition();
-
   const onSubmit: SubmitHandler<z.infer<typeof paymentMethodSchema>> = async (
     values,
   ) => {
-    startTransition(async () => {
-      // Update user's payment method in database
-      const res = await updateUserPaymentMethod(values);
-      if (!res.success) {
-        toast({
-          variant: 'destructive',
-          description: res.message,
-        });
-        return;
-      }
-      router.push('/place-order');
-    });
+    // Update user's payment method in database
+    const res = await updateUserPaymentMethod(values);
+    if (!res.success) {
+      toast({
+        variant: 'destructive',
+        description: res.message,
+      });
+      return;
+    }
+    router.push('/place-order');
   };
 
   return (
@@ -69,7 +64,10 @@ const PaymentMethodForm = ({
               />
             </div>
             <div className="flex gap-2 pt-3">
-              <SubmitButton isPending={isPending} buttonLabel="Continue" />
+              <SubmitButton
+                isPending={form.formState.isSubmitting}
+                buttonLabel="Continue"
+              />
             </div>
           </form>
         </Form>

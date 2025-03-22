@@ -14,7 +14,7 @@ import { insertProductSchema, updateProductSchema } from '@/lib/validators';
 import { Product } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useTransition, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import BaseFormField from '../shared/base-form-field';
@@ -47,8 +47,6 @@ export default function ProductForm({
       product && type === 'Update' ? product : productDefaultValues,
   });
 
-  const [isPending, startTransition] = useTransition();
-
   const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
     values,
   ) => {
@@ -60,21 +58,19 @@ export default function ProductForm({
         router.push('/admin/products');
       }
     };
-    startTransition(async () => {
-      if (type === 'Create') {
-        const res = await createProduct(values);
-        handleResponse(res);
-      }
+    if (type === 'Create') {
+      const res = await createProduct(values);
+      handleResponse(res);
+    }
 
-      if (type === 'Update') {
-        if (!productId) {
-          router.push('/admin/products');
-          return;
-        }
-        const res = await updateProduct({ ...values, id: productId });
-        handleResponse(res);
+    if (type === 'Update') {
+      if (!productId) {
+        router.push('/admin/products');
+        return;
       }
-    });
+      const res = await updateProduct({ ...values, id: productId });
+      handleResponse(res);
+    }
   };
 
   const images = form.watch('images');
@@ -267,7 +263,10 @@ export default function ProductForm({
         </div>
         <div>
           {/* Submit */}
-          <ProductButton isPending={isPending} formType={type} />
+          <ProductButton
+            isPending={form.formState.isSubmitting}
+            formType={type}
+          />
         </div>
       </form>
     </Form>

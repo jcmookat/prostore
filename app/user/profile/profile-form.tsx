@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,35 +26,31 @@ export default function ProfileForm(): ReactElement {
     },
   });
 
-  const [isPending, startTransition] = useTransition();
-
   const onSubmit: SubmitHandler<z.infer<typeof updateProfileSchema>> = async (
     values,
   ) => {
-    startTransition(async () => {
-      const res = await updateProfile(values);
-      if (!res.success) {
-        toast({
-          variant: 'destructive',
-          description: res.message,
-        });
-        return;
-      }
-
-      const newSession = {
-        ...session,
-        user: {
-          ...session?.user,
-          name: values.name,
-        },
-      };
-      await update(newSession);
-
-      router.refresh();
-
+    const res = await updateProfile(values);
+    if (!res.success) {
       toast({
+        variant: 'destructive',
         description: res.message,
       });
+      return;
+    }
+
+    const newSession = {
+      ...session,
+      user: {
+        ...session?.user,
+        name: values.name,
+      },
+    };
+    await update(newSession);
+
+    router.refresh();
+
+    toast({
+      description: res.message,
     });
   };
 
@@ -77,7 +73,7 @@ export default function ProfileForm(): ReactElement {
           />
         </div>
         <SubmitButton
-          isPending={isPending}
+          isPending={form.formState.isSubmitting}
           buttonLabel="Update Profile"
           isPendingLabel="Updating..."
           withIcon={false}

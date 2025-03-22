@@ -34,7 +34,7 @@ const CredentialsSignInForm = () => {
       toast({
         title: 'Sign In failed',
         description: data.message,
-        variant: 'destructive',
+        variant: 'destructive', // Use a 'destructive' variant to show an error style
       });
     }
   }, [data, toast]);

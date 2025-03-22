@@ -17,7 +17,7 @@ export async function createUpdateReview(
     // Validate and store review data and userId
     const review = insertReviewSchema.parse({
       ...data,
-      userId: session?.user?.id,
+      userId: session?.user.id,
     });
 
     // Get the product being reviewed
@@ -37,7 +37,6 @@ export async function createUpdateReview(
 
     // If review exists, update it, otherwise create a new one
     await prisma.$transaction(async (tx) => {
-      let message = '';
       if (reviewExists) {
         // Update the review
         await tx.review.update({
@@ -48,11 +47,9 @@ export async function createUpdateReview(
             rating: review.rating,
           },
         });
-        message = 'Review updated successfully';
       } else {
         // Create a new review
         await tx.review.create({ data: review });
-        message = 'Review submitted successfully';
       }
 
       // Get the average rating
@@ -74,14 +71,13 @@ export async function createUpdateReview(
           numReviews: numReviews,
         },
       });
-
-      revalidatePath(`/product/${product.slug}`);
-
-      return {
-        success: true,
-        message,
-      };
     });
+    revalidatePath(`/product/${product.slug}`);
+
+    return {
+      success: true,
+      message: 'Review updated successfully',
+    };
   } catch (error) {
     return {
       success: false,

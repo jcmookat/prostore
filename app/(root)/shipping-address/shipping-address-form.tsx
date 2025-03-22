@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { useTransition } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ShippingAddress } from '@/types';
 import { shippingAddressSchema } from '@/lib/validators';
@@ -24,22 +23,18 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
     defaultValues: address || shippingAddressDefaultValues, // address - from user.address
   });
 
-  const [isPending, startTransition] = useTransition();
-
   const onSubmit: SubmitHandler<z.infer<typeof shippingAddressSchema>> = async (
     values,
   ) => {
-    startTransition(async () => {
-      const res = await updateUserAddress(values);
-      if (!res.success) {
-        toast({
-          variant: 'destructive',
-          description: res.message,
-        });
-        return;
-      }
-      router.push('/payment-method');
-    });
+    const res = await updateUserAddress(values);
+    if (!res.success) {
+      toast({
+        variant: 'destructive',
+        description: res.message,
+      });
+      return;
+    }
+    router.push('/payment-method');
   };
 
   return (
@@ -96,7 +91,10 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
               />
             </div>
             <div className="flex gap-2 pt-3">
-              <SubmitButton isPending={isPending} buttonLabel="Continue" />
+              <SubmitButton
+                isPending={form.formState.isSubmitting}
+                buttonLabel="Continue"
+              />
             </div>
           </form>
         </Form>

@@ -25,11 +25,18 @@ export default function ReviewList({
 }): ReactElement {
   const [reviews, setReviews] = useState<Review[]>([]);
 
+  const reload = async () => {
+    console.log('review submitted');
+  };
   return (
     <div className="space-y-4">
       {reviews.length === 0 && <div>No reviews yet</div>}
       {userId ? (
-        <ReviewForm userId={userId} productId={productId} />
+        <ReviewForm
+          userId={userId}
+          productId={productId}
+          onReviewSubmitted={reload}
+        />
       ) : (
         <div>
           Please{' '}

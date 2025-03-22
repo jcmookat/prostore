@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { updateUserSchema } from '@/lib/validators';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useTransition, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import BaseFormField from '@/components/shared/base-form-field';
@@ -26,35 +26,31 @@ export default function UpdateUserForm({
     defaultValues: user,
   });
 
-  const [isPending, startTransition] = useTransition();
-
   const onSubmit: SubmitHandler<z.infer<typeof updateUserSchema>> = async (
     values,
   ) => {
-    startTransition(async () => {
-      try {
-        const res = await updateUser({ ...values, id: user.id });
-        if (!res.success) {
-          toast({
-            variant: 'destructive',
-            description: res.message,
-          });
-          return;
-        }
-
-        toast({
-          description: res.message,
-        });
-        form.reset(values);
-        router.push('/admin/users');
-      } catch (error) {
-        console.error('Unexpected error:', error);
+    try {
+      const res = await updateUser({ ...values, id: user.id });
+      if (!res.success) {
         toast({
           variant: 'destructive',
-          description: (error as Error).message,
+          description: res.message,
         });
+        return;
       }
-    });
+
+      toast({
+        description: res.message,
+      });
+      form.reset(values);
+      router.push('/admin/users');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({
+        variant: 'destructive',
+        description: (error as Error).message,
+      });
+    }
   };
   return (
     <Form {...form}>
@@ -89,7 +85,7 @@ export default function UpdateUserForm({
         <div className="flex-between">
           <SubmitButton
             buttonLabel="Update User"
-            isPending={isPending}
+            isPending={form.formState.isSubmitting}
             isPendingLabel="Updating..."
           />
         </div>
