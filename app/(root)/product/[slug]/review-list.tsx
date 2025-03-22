@@ -9,11 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Calendar, Check, User } from 'lucide-react';
+import { Calendar, User } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 import ReviewForm from './review-form';
 import { getReviews } from '@/lib/actions/review.actions';
 import Rating from '@/components/shared/product/rating';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ReviewList({
   userId,
@@ -25,7 +26,7 @@ export default function ReviewList({
   productSlug: string;
 }): ReactElement {
   const [reviews, setReviews] = useState<Review[]>([]);
-
+  const { toast } = useToast();
   useEffect(() => {
     const loadReviews = async () => {
       const res = await getReviews({ productId });
@@ -35,7 +36,16 @@ export default function ReviewList({
   }, [productId]);
 
   const reload = async () => {
-    console.log('review submitted');
+    try {
+      const res = await getReviews({ productId });
+      setReviews([...res.data]);
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: 'destructive',
+        description: 'Error in fetching reviews',
+      });
+    }
   };
   return (
     <div className="space-y-4">

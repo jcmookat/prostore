@@ -19,7 +19,10 @@ import { Form } from '@/components/ui/form';
 import { REVIEW_RATINGS } from '@/lib/constants';
 import SubmitButton from '@/components/shared/submit-button';
 import BaseFormField from '@/components/shared/base-form-field';
-import { createUpdateReview } from '@/lib/actions/review.actions';
+import {
+  createUpdateReview,
+  getReviewByProductId,
+} from '@/lib/actions/review.actions';
 
 export default function ReviewForm({
   userId,
@@ -32,16 +35,23 @@ export default function ReviewForm({
 }): ReactElement {
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
-
   const form = useForm<z.infer<typeof insertReviewSchema>>({
     resolver: zodResolver(insertReviewSchema),
     defaultValues: reviewFormDefaultValues,
   });
 
   // Form Open Handler
-  const handleOpenForm = () => {
+  const handleOpenForm = async () => {
     form.setValue('productId', productId);
     form.setValue('userId', userId);
+
+    const review = await getReviewByProductId({ productId });
+
+    if (review) {
+      form.setValue('title', review.title);
+      form.setValue('description', review.description);
+      form.setValue('rating', review.rating);
+    }
     setOpen(true);
   };
 
@@ -60,7 +70,7 @@ export default function ReviewForm({
 
     setOpen(false);
 
-    onReviewSubmitted?.();
+    onReviewSubmitted();
 
     toast({
       description: res.message,
