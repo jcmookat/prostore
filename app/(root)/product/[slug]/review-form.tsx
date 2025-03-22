@@ -31,7 +31,6 @@ export default function ReviewForm({
   onReviewSubmitted?: () => void;
 }): ReactElement {
   const [open, setOpen] = useState<boolean>(false);
-
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertReviewSchema>>({
