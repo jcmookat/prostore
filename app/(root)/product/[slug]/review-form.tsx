@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, type ReactElement } from 'react';
 import { insertReviewSchema } from '@/lib/validators';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,11 +28,11 @@ import {
 export default function ReviewForm({
   userId,
   productId,
-  onReviewSubmitted,
+  onReviewSubmittedAction,
 }: {
   userId: string;
   productId: string;
-  onReviewSubmitted?: () => void;
+  onReviewSubmittedAction: () => void;
 }): ReactElement {
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
@@ -70,7 +71,7 @@ export default function ReviewForm({
 
     setOpen(false);
 
-    onReviewSubmitted();
+    onReviewSubmittedAction();
 
     toast({
       description: res.message,

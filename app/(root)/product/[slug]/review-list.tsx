@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState, type ReactElement } from 'react';
 import { Review } from '@/types';
 import Link from 'next/link';
@@ -54,7 +55,7 @@ export default function ReviewList({
         <ReviewForm
           userId={userId}
           productId={productId}
-          onReviewSubmitted={reload}
+          onReviewSubmittedAction={reload}
         />
       ) : (
         <div>
