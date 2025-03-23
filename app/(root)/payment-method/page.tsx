@@ -15,10 +15,11 @@ const PaymentMethodPage = async () => {
   if (!userId) throw new Error('No User ID');
 
   const user = await getUserById(userId);
+
   return (
     <>
       <CheckoutSteps current={2} />
-      <PaymentMethodForm prefferedPaymentMethod={user.paymentMethod} />
+      <PaymentMethodForm prefferedPaymentMethod={user.paymentMethod || ''} />
     </>
   );
 };
