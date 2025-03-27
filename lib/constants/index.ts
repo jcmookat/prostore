@@ -60,3 +60,5 @@ export const reviewFormDefaultValues = {
 export const REVIEW_RATINGS = process.env.REVIEW_RATINGS
   ? process.env.REVIEW_RATINGS.split(', ')
   : ['1', '2', '3', '4', '5'];
+
+export const SENDER_EMAIL = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
