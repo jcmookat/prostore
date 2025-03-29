@@ -26,7 +26,7 @@ export async function getProductBySlug(slug: string) {
     where: { slug: slug },
   });
   if (!product) throw new Error('Product not found');
-  return convertToPlainObject(product);
+  return product;
 }
 
 // Get single product by id
@@ -56,70 +56,63 @@ export async function getAllProducts({
   rating?: string;
   sort?: string;
 }) {
-  try {
-    // Query filter
-    const queryFilter: Prisma.ProductWhereInput =
-      query && query !== 'all'
-        ? {
-            name: {
-              contains: query,
-              mode: 'insensitive',
-            } as Prisma.StringFilter,
-          }
-        : {};
+  // Query filter
+  const queryFilter: Prisma.ProductWhereInput =
+    query && query !== 'all'
+      ? {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          } as Prisma.StringFilter,
+        }
+      : {};
 
-    // Category filter
-    const categoryFilter =
-      category && category !== 'all' ? { category: category } : {};
+  // Category filter
+  const categoryFilter =
+    category && category !== 'all' ? { category: category } : {};
 
-    // Price filter
-    const priceFilter: Prisma.ProductWhereInput =
-      price && price !== 'all'
-        ? {
-            price: {
-              gte: Number(price.split('-')[0]),
-              lte: Number(price.split('-')[1]),
-            },
-          }
-        : {};
+  // Price filter
+  const priceFilter: Prisma.ProductWhereInput =
+    price && price !== 'all'
+      ? {
+          price: {
+            gte: Number(price.split('-')[0]),
+            lte: Number(price.split('-')[1]),
+          },
+        }
+      : {};
 
-    // Rating filter
-    const ratingFilter =
-      rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
+  // Rating filter
+  const ratingFilter =
+    rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
 
-    // Fetch products
-    const data = await prisma.product.findMany({
-      where: {
-        ...queryFilter,
-        ...categoryFilter,
-        ...priceFilter,
-        ...ratingFilter,
-      },
-      orderBy:
-        sort === 'lowest'
-          ? { price: 'asc' }
-          : sort === 'highest'
-            ? { price: 'desc' }
-            : sort === 'rating'
-              ? { rating: 'desc' }
-              : { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  // Fetch products
+  const data = await prisma.product.findMany({
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    },
+    orderBy:
+      sort === 'lowest'
+        ? { price: 'asc' }
+        : sort === 'highest'
+          ? { price: 'desc' }
+          : sort === 'rating'
+            ? { rating: 'desc' }
+            : { createdAt: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
 
-    const dataCount = await prisma.product.count();
-    const totalPages = Math.ceil(dataCount / limit);
+  const dataCount = await prisma.product.count();
+  const totalPages = Math.ceil(dataCount / limit);
 
-    return {
-      data: convertToPlainObject(data),
-      totalPages,
-      success: true,
-      message: 'Successfully fetched all products.',
-    };
-  } catch (error) {
-    console.error('Error on fetching products.', error);
-    throw new Error('Failed to fetch products.');
-  }
+  return {
+    data,
+    totalPages,
+  };
 }
 
 // Get product categories
@@ -133,7 +126,7 @@ export async function getAllCategories() {
     throw new Error('No categories found');
   }
 
-  return convertToPlainObject(categories);
+  return categories;
 }
 
 // Delete a product
