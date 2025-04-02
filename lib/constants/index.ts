@@ -8,21 +8,21 @@ export const LATEST_PRODUCTS_LIMIT =
   Number(process.env.LATEST_PRODUCTS_LIMIT) || 4;
 
 export const signInDefaultValues = {
-  email: 'user1@example.com',
-  password: '123456',
+  email: '',
+  password: '',
 };
 export const signUpDefaultValues = {
-  name: 'User',
-  email: 'user@example.com',
-  password: '123456',
-  confirmPassword: '123456',
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
 };
 export const shippingAddressDefaultValues = {
-  fullName: 'John Doe',
-  streetAddress: '123 Main St',
-  city: 'Anytown',
-  postalCode: '12345',
-  country: 'USA',
+  fullName: '',
+  streetAddress: '',
+  city: '',
+  postalCode: '',
+  country: '',
 };
 export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
   ? process.env.PAYMENT_METHODS.split(', ')
